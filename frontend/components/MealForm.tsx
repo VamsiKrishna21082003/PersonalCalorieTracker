@@ -47,8 +47,15 @@ export default function MealForm({ meal, onSuccess, initialData }: MealFormProps
     if (initialData) {
       setFormData(prev => ({
         ...prev,
-        ...initialData,
+        foodName: initialData.foodName ?? prev.foodName,
+        quantity: initialData.quantity ?? prev.quantity,
+        mealType: initialData.mealType ?? prev.mealType,
+        calories: initialData.calories ?? prev.calories,
+        protein: initialData.protein ?? prev.protein,
+        carbs: initialData.carbs ?? prev.carbs,
+        fat: initialData.fat ?? prev.fat,
         date: initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : prev.date,
+        micronutrients: initialData.micronutrients ?? prev.micronutrients,
       }));
       // Show micronutrients section if meal has micronutrients
       if (initialData.micronutrients && Object.keys(initialData.micronutrients).length > 0) {
