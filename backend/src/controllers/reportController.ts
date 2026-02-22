@@ -213,28 +213,74 @@ export const getGoalComparison = async (req: AuthRequest, res: Response) => {
       }
     });
 
+    // Calculate number of days in the date range
+    let daysInRange = 1; // Default to 1 day if no date range provided
+    let actualStartDate: Date;
+    let actualEndDate: Date;
+
+    if (startDate && endDate) {
+      // Parse dates and extract just the date part (YYYY-MM-DD) to avoid timezone issues
+      const startDateStr = (startDate as string).split('T')[0]; // Get YYYY-MM-DD part
+      const endDateStr = (endDate as string).split('T')[0]; // Get YYYY-MM-DD part
+      
+      // Create dates at midnight UTC to ensure same calendar date = same day
+      actualStartDate = new Date(startDateStr + 'T00:00:00Z');
+      actualEndDate = new Date(endDateStr + 'T00:00:00Z');
+    } else if (startDate) {
+      const startDateStr = (startDate as string).split('T')[0];
+      actualStartDate = new Date(startDateStr + 'T00:00:00Z');
+      actualEndDate = new Date(actualStartDate);
+    } else {
+      // Default to today (from the where clause logic above)
+      const today = new Date();
+      today.setUTCHours(0, 0, 0, 0);
+      actualStartDate = today;
+      actualEndDate = today;
+    }
+
+    // Calculate difference in days (inclusive of both start and end dates)
+    // Since both dates are normalized to midnight UTC, the difference is in whole days
+    const diffInMs = actualEndDate.getTime() - actualStartDate.getTime();
+    const diffInDays = diffInMs / (1000 * 60 * 60 * 24);
+    daysInRange = Math.floor(diffInDays) + 1; // +1 to include both start and end dates
+
+    // Calculate period goals (daily goals multiplied by number of days)
+    const dailyGoal = {
+      calories: goal.dailyCalories,
+      protein: goal.dailyProtein || 0,
+      carbs: goal.dailyCarbs || 0,
+      fat: goal.dailyFat || 0,
+      micronutrients: goal.micronutrients && typeof goal.micronutrients === 'object' 
+        ? (goal.micronutrients as Record<string, number>)
+        : {},
+    };
+
+    const periodGoal = {
+      calories: dailyGoal.calories * daysInRange,
+      protein: dailyGoal.protein * daysInRange,
+      carbs: dailyGoal.carbs * daysInRange,
+      fat: dailyGoal.fat * daysInRange,
+      micronutrients: Object.fromEntries(
+        Object.entries(dailyGoal.micronutrients).map(([key, value]) => [key, value * daysInRange])
+      ),
+    };
+
     res.json({
       hasGoal: true,
-      goal: {
-        calories: goal.dailyCalories,
-        protein: goal.dailyProtein || 0,
-        carbs: goal.dailyCarbs || 0,
-        fat: goal.dailyFat || 0,
-        weightGoal: goal.weightGoal || null,
-        micronutrients: goal.micronutrients && typeof goal.micronutrients === 'object' 
-          ? (goal.micronutrients as Record<string, number>)
-          : {},
-      },
+      daysInRange,
+      dailyGoal,
+      goal: periodGoal, // Return period goal as the main goal for comparison
       actual: {
         ...actual,
         micronutrients: actualMicronutrients,
       },
       difference: {
-        calories: actual.calories - goal.dailyCalories,
-        protein: actual.protein - (goal.dailyProtein || 0),
-        carbs: actual.carbs - (goal.dailyCarbs || 0),
-        fat: actual.fat - (goal.dailyFat || 0),
+        calories: actual.calories - periodGoal.calories,
+        protein: actual.protein - periodGoal.protein,
+        carbs: actual.carbs - periodGoal.carbs,
+        fat: actual.fat - periodGoal.fat,
       },
+      weightGoal: goal.weightGoal || null, // Weight goal is not multiplied by days
     });
   } catch (error) {
     console.error('Get goal comparison error:', error);

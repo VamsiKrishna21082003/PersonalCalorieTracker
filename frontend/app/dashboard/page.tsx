@@ -268,7 +268,12 @@ export default function DashboardPage() {
                   <p className="text-2xl font-semibold text-gray-900">
                     {summaryStats.calories.toFixed(0)}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">kcal</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    kcal
+                    {goalComparison?.daysInRange && goalComparison.daysInRange > 1 && (
+                      <span className="ml-1">({goalComparison.daysInRange} days)</span>
+                    )}
+                  </p>
                 </div>
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -279,7 +284,12 @@ export default function DashboardPage() {
               {goalComparison?.hasGoal && (
                 <div className="mt-3">
                   <div className="flex justify-between items-center mb-1">
-                    <span className="text-xs text-gray-600">Goal Progress</span>
+                    <span className="text-xs text-gray-600">
+                      Goal Progress
+                      {goalComparison?.daysInRange && goalComparison.daysInRange > 1 && (
+                        <span className="ml-1 text-gray-500">({goalComparison.daysInRange} days)</span>
+                      )}
+                    </span>
                     <span className={`text-xs font-medium ${
                       getGoalPercentage(summaryStats.calories, goalComparison.goal!.calories)! > 110
                         ? 'text-red-600'
@@ -288,6 +298,11 @@ export default function DashboardPage() {
                         : 'text-green-600'
                     }`}>
                       {getGoalPercentage(summaryStats.calories, goalComparison.goal!.calories)!.toFixed(0)}%
+                      {goalComparison?.dailyGoal && (
+                        <span className="ml-1 text-gray-500 font-normal">
+                          ({goalComparison.dailyGoal.calories.toFixed(0)}/day)
+                        </span>
+                      )}
                     </span>
                   </div>
                   <ProgressBar
@@ -316,7 +331,12 @@ export default function DashboardPage() {
                   <p className="text-2xl font-semibold text-gray-900">
                     {summaryStats.protein.toFixed(1)}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">grams</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    grams
+                    {goalComparison?.daysInRange && goalComparison.daysInRange > 1 && (
+                      <span className="ml-1">({goalComparison.daysInRange} days)</span>
+                    )}
+                  </p>
                 </div>
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -336,6 +356,11 @@ export default function DashboardPage() {
                         : 'text-green-600'
                     }`}>
                       {getGoalPercentage(summaryStats.protein, goalComparison.goal!.protein!)!.toFixed(0)}%
+                      {goalComparison?.dailyGoal && (
+                        <span className="ml-1 text-gray-500 font-normal">
+                          ({goalComparison.dailyGoal.protein.toFixed(0)}g/day)
+                        </span>
+                      )}
                     </span>
                   </div>
                   <ProgressBar
@@ -353,7 +378,12 @@ export default function DashboardPage() {
                   <p className="text-2xl font-semibold text-gray-900">
                     {summaryStats.carbs.toFixed(1)}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">grams</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    grams
+                    {goalComparison?.daysInRange && goalComparison.daysInRange > 1 && (
+                      <span className="ml-1">({goalComparison.daysInRange} days)</span>
+                    )}
+                  </p>
                 </div>
                 <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -373,6 +403,11 @@ export default function DashboardPage() {
                         : 'text-green-600'
                     }`}>
                       {getGoalPercentage(summaryStats.carbs, goalComparison.goal!.carbs!)!.toFixed(0)}%
+                      {goalComparison?.dailyGoal && (
+                        <span className="ml-1 text-gray-500 font-normal">
+                          ({goalComparison.dailyGoal.carbs.toFixed(0)}g/day)
+                        </span>
+                      )}
                     </span>
                   </div>
                   <ProgressBar
@@ -390,7 +425,12 @@ export default function DashboardPage() {
                   <p className="text-2xl font-semibold text-gray-900">
                     {summaryStats.fat.toFixed(1)}
                   </p>
-                  <p className="text-xs text-gray-500 mt-1">grams</p>
+                  <p className="text-xs text-gray-500 mt-1">
+                    grams
+                    {goalComparison?.daysInRange && goalComparison.daysInRange > 1 && (
+                      <span className="ml-1">({goalComparison.daysInRange} days)</span>
+                    )}
+                  </p>
                 </div>
                 <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center">
                   <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -410,6 +450,11 @@ export default function DashboardPage() {
                         : 'text-green-600'
                     }`}>
                       {getGoalPercentage(summaryStats.fat, goalComparison.goal!.fat!)!.toFixed(0)}%
+                      {goalComparison?.dailyGoal && (
+                        <span className="ml-1 text-gray-500 font-normal">
+                          ({goalComparison.dailyGoal.fat.toFixed(0)}g/day)
+                        </span>
+                      )}
                     </span>
                   </div>
                   <ProgressBar
