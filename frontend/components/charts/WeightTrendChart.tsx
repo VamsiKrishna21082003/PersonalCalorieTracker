@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 
 interface WeightData {
@@ -17,13 +18,16 @@ export default function WeightTrendChart({ data }: WeightTrendChartProps) {
     return `${date.getMonth() + 1}/${date.getDate()}`;
   };
 
-  const formatTooltipLabel = (value: string) => {
-    const date = new Date(value);
-    return date.toLocaleDateString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric' 
-    });
+  const formatTooltipLabel = (label: React.ReactNode) => {
+    if (typeof label === 'string') {
+      const date = new Date(label);
+      return date.toLocaleDateString('en-US', { 
+        month: 'short', 
+        day: 'numeric', 
+        year: 'numeric' 
+      });
+    }
+    return label;
   };
 
   return (
@@ -42,7 +46,10 @@ export default function WeightTrendChart({ data }: WeightTrendChartProps) {
         <Tooltip
           contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#111827' }}
           labelFormatter={formatTooltipLabel}
-          formatter={(value: number) => [`${value.toFixed(1)} kg`, 'Weight']}
+          formatter={(value: number | undefined) => {
+            if (value === undefined) return ['0.0 kg', 'Weight'];
+            return [`${value.toFixed(1)} kg`, 'Weight'];
+          }}
         />
         <Line 
           type="monotone" 

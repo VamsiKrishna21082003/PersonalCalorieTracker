@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface WeeklyTrendData {
@@ -21,9 +22,12 @@ export default function WeeklyTrendChart({ data, groupBy }: WeeklyTrendChartProp
     return `${date.getMonth() + 1}/${date.getDate()}`;
   };
 
-  const formatTooltipLabel = (value: string) => {
-    const date = new Date(value);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const formatTooltipLabel = (label: React.ReactNode) => {
+    if (typeof label === 'string') {
+      const date = new Date(label);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    return label;
   };
 
   return (

@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 interface MicronutrientData {
@@ -66,9 +67,12 @@ export default function MicronutrientChart({ data, groupBy }: MicronutrientChart
     return `${date.getMonth() + 1}/${date.getDate()}`;
   };
 
-  const formatTooltipLabel = (value: string) => {
-    const date = new Date(value);
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  const formatTooltipLabel = (label: React.ReactNode) => {
+    if (typeof label === 'string') {
+      const date = new Date(label);
+      return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+    return label;
   };
 
   if (sortedKeys.length === 0 || data.length === 0) {
@@ -98,8 +102,9 @@ export default function MicronutrientChart({ data, groupBy }: MicronutrientChart
         <Tooltip
           contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#111827' }}
           labelFormatter={formatTooltipLabel}
-          formatter={(value: number, name: string) => {
-            const formattedName = formatMicronutrientName(name);
+          formatter={(value: number | undefined, name: string | undefined) => {
+            const formattedName = formatMicronutrientName(name || '');
+            if (value === undefined) return ['0.00', formattedName];
             return [`${value.toFixed(2)}`, formattedName];
           }}
         />

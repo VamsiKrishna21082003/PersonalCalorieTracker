@@ -156,9 +156,10 @@ export default function MealList({ meals, onUpdate }: MealListProps) {
                           .slice(0, 3)
                           .map(([key, value]) => {
                             const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim();
+                            const displayValue = typeof value === 'number' ? value.toFixed(1) : String(value || '');
                             return (
                               <div key={key} className="truncate">
-                                {formattedKey}: {typeof value === 'number' ? value.toFixed(1) : value}
+                                {formattedKey}: {displayValue}
                               </div>
                             );
                           })}

@@ -42,7 +42,10 @@ export default function MacroChart({ protein, carbs, fat, calories }: MacroChart
         </Pie>
         <Tooltip
           contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#111827' }}
-          formatter={(value: number) => [`${value.toFixed(1)} kcal`, 'Calories']}
+          formatter={(value: number | undefined) => {
+            if (value === undefined) return ['0 kcal', 'Calories'];
+            return [`${value.toFixed(1)} kcal`, 'Calories'];
+          }}
         />
         <Legend wrapperStyle={{ color: '#6b7280' }} />
       </PieChart>
