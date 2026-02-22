@@ -34,7 +34,10 @@ export default function MealForm({ meal, onSuccess, initialData }: MealFormProps
     protein: initialData?.protein || meal?.protein || '',
     carbs: initialData?.carbs || meal?.carbs || '',
     fat: initialData?.fat || meal?.fat || '',
-    date: initialData?.date || meal?.date ? new Date(initialData?.date || meal?.date).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+    date: (() => {
+      const dateValue = initialData?.date || meal?.date;
+      return dateValue ? new Date(dateValue).toISOString().split('T')[0] : new Date().toISOString().split('T')[0];
+    })(),
     micronutrients: initialData?.micronutrients || meal?.micronutrients || {},
   });
   const [loading, setLoading] = useState(false);
