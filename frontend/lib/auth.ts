@@ -9,9 +9,16 @@ export interface AuthResponse {
   user: User;
 }
 
+// Helper function to normalize API URL (remove trailing slashes)
+const getApiUrl = (): string => {
+  const url = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+  return url.replace(/\/+$/, ''); // Remove trailing slashes
+};
+
 export const auth = {
   login: async (email: string, password: string): Promise<AuthResponse> => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/login`, {
+    const apiUrl = getApiUrl();
+    const response = await fetch(`${apiUrl}/api/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
@@ -26,7 +33,8 @@ export const auth = {
   },
 
   register: async (email: string, password: string, name?: string): Promise<AuthResponse> => {
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/auth/register`, {
+    const apiUrl = getApiUrl();
+    const response = await fetch(`${apiUrl}/api/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password, name }),
