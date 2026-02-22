@@ -332,15 +332,31 @@ Always confirm actions before executing them if the user's intent is unclear. Be
 Provide helpful, accurate nutrition advice. Be concise and friendly.`;
 
     // Build conversation history for Gemini chat
+    // Gemini requires that the first content must have role 'user'
     const chatHistory: Array<{ role: 'user' | 'model'; parts: Array<{ text: string }> }> = [];
     
     // Add conversation history (reverse to get chronological order, exclude the last user message we just saved)
-    history.reverse().slice(1).forEach((msg) => {
-      chatHistory.push({
-        role: msg.role === 'user' ? 'user' : 'model',
-        parts: [{ text: msg.content }],
+    const reversedHistory = history.reverse().slice(1);
+    
+    // Filter to ensure history starts with 'user' role (Gemini requirement)
+    // Remove any leading 'model' messages
+    let startIndex = 0;
+    for (let i = 0; i < reversedHistory.length; i++) {
+      if (reversedHistory[i].role === 'user') {
+        startIndex = i;
+        break;
+      }
+    }
+    
+    // Only include history if we found a 'user' message to start with
+    if (startIndex < reversedHistory.length && reversedHistory[startIndex].role === 'user') {
+      reversedHistory.slice(startIndex).forEach((msg) => {
+        chatHistory.push({
+          role: msg.role === 'user' ? 'user' : 'model',
+          parts: [{ text: msg.content }],
+        });
       });
-    });
+    }
 
     // Use Gemini models - current stable version
     const models = [
@@ -371,8 +387,13 @@ Provide helpful, accurate nutrition advice. Be concise and friendly.`;
         });
 
         // Start a chat session with history
+        // Ensure history is valid: must be empty or start with 'user' role
+        const validHistory = chatHistory.length === 0 || chatHistory[0].role === 'user' 
+          ? chatHistory 
+          : [];
+        
         const chat = model.startChat({
-          history: chatHistory,
+          history: validHistory,
         });
 
         // Send the current message and handle function calls
