@@ -83,6 +83,7 @@ export type GoalCountAggregateOutputType = {
   startDate: number
   endDate: number
   isActive: number
+  micronutrients: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -146,6 +147,7 @@ export type GoalCountAggregateInputType = {
   startDate?: true
   endDate?: true
   isActive?: true
+  micronutrients?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -248,6 +250,7 @@ export type GoalGroupByOutputType = {
   startDate: Date
   endDate: Date | null
   isActive: boolean
+  micronutrients: runtime.JsonValue | null
   createdAt: Date
   updatedAt: Date
   _count: GoalCountAggregateOutputType | null
@@ -286,6 +289,7 @@ export type GoalWhereInput = {
   startDate?: Prisma.DateTimeFilter<"Goal"> | Date | string
   endDate?: Prisma.DateTimeNullableFilter<"Goal"> | Date | string | null
   isActive?: Prisma.BoolFilter<"Goal"> | boolean
+  micronutrients?: Prisma.JsonNullableFilter<"Goal">
   createdAt?: Prisma.DateTimeFilter<"Goal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Goal"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -303,6 +307,7 @@ export type GoalOrderByWithRelationInput = {
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  micronutrients?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -323,6 +328,7 @@ export type GoalWhereUniqueInput = Prisma.AtLeast<{
   startDate?: Prisma.DateTimeFilter<"Goal"> | Date | string
   endDate?: Prisma.DateTimeNullableFilter<"Goal"> | Date | string | null
   isActive?: Prisma.BoolFilter<"Goal"> | boolean
+  micronutrients?: Prisma.JsonNullableFilter<"Goal">
   createdAt?: Prisma.DateTimeFilter<"Goal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Goal"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -340,6 +346,7 @@ export type GoalOrderByWithAggregationInput = {
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrderInput | Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  micronutrients?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.GoalCountOrderByAggregateInput
@@ -363,6 +370,7 @@ export type GoalScalarWhereWithAggregatesInput = {
   startDate?: Prisma.DateTimeWithAggregatesFilter<"Goal"> | Date | string
   endDate?: Prisma.DateTimeNullableWithAggregatesFilter<"Goal"> | Date | string | null
   isActive?: Prisma.BoolWithAggregatesFilter<"Goal"> | boolean
+  micronutrients?: Prisma.JsonNullableWithAggregatesFilter<"Goal">
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Goal"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Goal"> | Date | string
 }
@@ -377,6 +385,7 @@ export type GoalCreateInput = {
   startDate?: Date | string
   endDate?: Date | string | null
   isActive?: boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutGoalsInput
@@ -394,6 +403,7 @@ export type GoalUncheckedCreateInput = {
   startDate?: Date | string
   endDate?: Date | string | null
   isActive?: boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   mealEntries?: Prisma.MealEntryUncheckedCreateNestedManyWithoutGoalInput
@@ -409,6 +419,7 @@ export type GoalUpdateInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutGoalsNestedInput
@@ -426,6 +437,7 @@ export type GoalUncheckedUpdateInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealEntries?: Prisma.MealEntryUncheckedUpdateManyWithoutGoalNestedInput
@@ -442,6 +454,7 @@ export type GoalCreateManyInput = {
   startDate?: Date | string
   endDate?: Date | string | null
   isActive?: boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -456,6 +469,7 @@ export type GoalUpdateManyMutationInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -471,6 +485,7 @@ export type GoalUncheckedUpdateManyInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -496,6 +511,7 @@ export type GoalCountOrderByAggregateInput = {
   startDate?: Prisma.SortOrder
   endDate?: Prisma.SortOrder
   isActive?: Prisma.SortOrder
+  micronutrients?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -643,6 +659,7 @@ export type GoalCreateWithoutUserInput = {
   startDate?: Date | string
   endDate?: Date | string | null
   isActive?: boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   mealEntries?: Prisma.MealEntryCreateNestedManyWithoutGoalInput
@@ -658,6 +675,7 @@ export type GoalUncheckedCreateWithoutUserInput = {
   startDate?: Date | string
   endDate?: Date | string | null
   isActive?: boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   mealEntries?: Prisma.MealEntryUncheckedCreateNestedManyWithoutGoalInput
@@ -703,6 +721,7 @@ export type GoalScalarWhereInput = {
   startDate?: Prisma.DateTimeFilter<"Goal"> | Date | string
   endDate?: Prisma.DateTimeNullableFilter<"Goal"> | Date | string | null
   isActive?: Prisma.BoolFilter<"Goal"> | boolean
+  micronutrients?: Prisma.JsonNullableFilter<"Goal">
   createdAt?: Prisma.DateTimeFilter<"Goal"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Goal"> | Date | string
 }
@@ -717,6 +736,7 @@ export type GoalCreateWithoutMealEntriesInput = {
   startDate?: Date | string
   endDate?: Date | string | null
   isActive?: boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutGoalsInput
@@ -733,6 +753,7 @@ export type GoalUncheckedCreateWithoutMealEntriesInput = {
   startDate?: Date | string
   endDate?: Date | string | null
   isActive?: boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -763,6 +784,7 @@ export type GoalUpdateWithoutMealEntriesInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutGoalsNestedInput
@@ -779,6 +801,7 @@ export type GoalUncheckedUpdateWithoutMealEntriesInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -793,6 +816,7 @@ export type GoalCreateManyUserInput = {
   startDate?: Date | string
   endDate?: Date | string | null
   isActive?: boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -807,6 +831,7 @@ export type GoalUpdateWithoutUserInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealEntries?: Prisma.MealEntryUpdateManyWithoutGoalNestedInput
@@ -822,6 +847,7 @@ export type GoalUncheckedUpdateWithoutUserInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealEntries?: Prisma.MealEntryUncheckedUpdateManyWithoutGoalNestedInput
@@ -837,6 +863,7 @@ export type GoalUncheckedUpdateManyWithoutUserInput = {
   startDate?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endDate?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   isActive?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  micronutrients?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -883,6 +910,7 @@ export type GoalSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   startDate?: boolean
   endDate?: boolean
   isActive?: boolean
+  micronutrients?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -901,6 +929,7 @@ export type GoalSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   startDate?: boolean
   endDate?: boolean
   isActive?: boolean
+  micronutrients?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -917,6 +946,7 @@ export type GoalSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   startDate?: boolean
   endDate?: boolean
   isActive?: boolean
+  micronutrients?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -933,11 +963,12 @@ export type GoalSelectScalar = {
   startDate?: boolean
   endDate?: boolean
   isActive?: boolean
+  micronutrients?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type GoalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "dailyCalories" | "dailyProtein" | "dailyCarbs" | "dailyFat" | "weightGoal" | "startDate" | "endDate" | "isActive" | "createdAt" | "updatedAt", ExtArgs["result"]["goal"]>
+export type GoalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "dailyCalories" | "dailyProtein" | "dailyCarbs" | "dailyFat" | "weightGoal" | "startDate" | "endDate" | "isActive" | "micronutrients" | "createdAt" | "updatedAt", ExtArgs["result"]["goal"]>
 export type GoalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   mealEntries?: boolean | Prisma.Goal$mealEntriesArgs<ExtArgs>
@@ -967,6 +998,7 @@ export type $GoalPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     startDate: Date
     endDate: Date | null
     isActive: boolean
+    micronutrients: runtime.JsonValue | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["goal"]>
@@ -1404,6 +1436,7 @@ export interface GoalFieldRefs {
   readonly startDate: Prisma.FieldRef<"Goal", 'DateTime'>
   readonly endDate: Prisma.FieldRef<"Goal", 'DateTime'>
   readonly isActive: Prisma.FieldRef<"Goal", 'Boolean'>
+  readonly micronutrients: Prisma.FieldRef<"Goal", 'Json'>
   readonly createdAt: Prisma.FieldRef<"Goal", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Goal", 'DateTime'>
 }

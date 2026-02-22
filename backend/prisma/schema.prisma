@@ -21,6 +21,7 @@ model User {
   goals      Goal[]
   mealEntries MealEntry[]
   chatMessages ChatMessage[]
+  weightEntries WeightEntry[]
 
   @@map("users")
 }
@@ -36,6 +37,8 @@ model Goal {
   startDate       DateTime @default(now())
   endDate         DateTime?
   isActive        Boolean  @default(true)
+  // Micronutrients stored as JSON
+  micronutrients Json?
   createdAt       DateTime @default(now())
   updatedAt       DateTime @updatedAt
 
@@ -81,4 +84,17 @@ model ChatMessage {
 
   @@index([userId, createdAt])
   @@map("chat_messages")
+}
+
+model WeightEntry {
+  id        String   @id @default(uuid())
+  userId    String
+  weight    Float
+  date      DateTime @default(now())
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, date])
+  @@map("weight_entries")
 }

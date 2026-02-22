@@ -193,6 +193,7 @@ export type UserWhereInput = {
   goals?: Prisma.GoalListRelationFilter
   mealEntries?: Prisma.MealEntryListRelationFilter
   chatMessages?: Prisma.ChatMessageListRelationFilter
+  weightEntries?: Prisma.WeightEntryListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -205,6 +206,7 @@ export type UserOrderByWithRelationInput = {
   goals?: Prisma.GoalOrderByRelationAggregateInput
   mealEntries?: Prisma.MealEntryOrderByRelationAggregateInput
   chatMessages?: Prisma.ChatMessageOrderByRelationAggregateInput
+  weightEntries?: Prisma.WeightEntryOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -220,6 +222,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   goals?: Prisma.GoalListRelationFilter
   mealEntries?: Prisma.MealEntryListRelationFilter
   chatMessages?: Prisma.ChatMessageListRelationFilter
+  weightEntries?: Prisma.WeightEntryListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -256,6 +259,7 @@ export type UserCreateInput = {
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   mealEntries?: Prisma.MealEntryCreateNestedManyWithoutUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
+  weightEntries?: Prisma.WeightEntryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -268,6 +272,7 @@ export type UserUncheckedCreateInput = {
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   mealEntries?: Prisma.MealEntryUncheckedCreateNestedManyWithoutUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
+  weightEntries?: Prisma.WeightEntryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -280,6 +285,7 @@ export type UserUpdateInput = {
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   mealEntries?: Prisma.MealEntryUpdateManyWithoutUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
+  weightEntries?: Prisma.WeightEntryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -292,6 +298,7 @@ export type UserUncheckedUpdateInput = {
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   mealEntries?: Prisma.MealEntryUncheckedUpdateManyWithoutUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+  weightEntries?: Prisma.WeightEntryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -407,6 +414,20 @@ export type UserUpdateOneRequiredWithoutChatMessagesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutChatMessagesInput, Prisma.UserUpdateWithoutChatMessagesInput>, Prisma.UserUncheckedUpdateWithoutChatMessagesInput>
 }
 
+export type UserCreateNestedOneWithoutWeightEntriesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWeightEntriesInput, Prisma.UserUncheckedCreateWithoutWeightEntriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWeightEntriesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutWeightEntriesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWeightEntriesInput, Prisma.UserUncheckedCreateWithoutWeightEntriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWeightEntriesInput
+  upsert?: Prisma.UserUpsertWithoutWeightEntriesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWeightEntriesInput, Prisma.UserUpdateWithoutWeightEntriesInput>, Prisma.UserUncheckedUpdateWithoutWeightEntriesInput>
+}
+
 export type UserCreateWithoutGoalsInput = {
   id?: string
   email: string
@@ -416,6 +437,7 @@ export type UserCreateWithoutGoalsInput = {
   updatedAt?: Date | string
   mealEntries?: Prisma.MealEntryCreateNestedManyWithoutUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
+  weightEntries?: Prisma.WeightEntryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGoalsInput = {
@@ -427,6 +449,7 @@ export type UserUncheckedCreateWithoutGoalsInput = {
   updatedAt?: Date | string
   mealEntries?: Prisma.MealEntryUncheckedCreateNestedManyWithoutUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
+  weightEntries?: Prisma.WeightEntryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGoalsInput = {
@@ -454,6 +477,7 @@ export type UserUpdateWithoutGoalsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealEntries?: Prisma.MealEntryUpdateManyWithoutUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
+  weightEntries?: Prisma.WeightEntryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGoalsInput = {
@@ -465,6 +489,7 @@ export type UserUncheckedUpdateWithoutGoalsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   mealEntries?: Prisma.MealEntryUncheckedUpdateManyWithoutUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+  weightEntries?: Prisma.WeightEntryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMealEntriesInput = {
@@ -476,6 +501,7 @@ export type UserCreateWithoutMealEntriesInput = {
   updatedAt?: Date | string
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
+  weightEntries?: Prisma.WeightEntryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMealEntriesInput = {
@@ -487,6 +513,7 @@ export type UserUncheckedCreateWithoutMealEntriesInput = {
   updatedAt?: Date | string
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
+  weightEntries?: Prisma.WeightEntryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMealEntriesInput = {
@@ -514,6 +541,7 @@ export type UserUpdateWithoutMealEntriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   chatMessages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
+  weightEntries?: Prisma.WeightEntryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMealEntriesInput = {
@@ -525,6 +553,7 @@ export type UserUncheckedUpdateWithoutMealEntriesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
+  weightEntries?: Prisma.WeightEntryUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutChatMessagesInput = {
@@ -536,6 +565,7 @@ export type UserCreateWithoutChatMessagesInput = {
   updatedAt?: Date | string
   goals?: Prisma.GoalCreateNestedManyWithoutUserInput
   mealEntries?: Prisma.MealEntryCreateNestedManyWithoutUserInput
+  weightEntries?: Prisma.WeightEntryCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutChatMessagesInput = {
@@ -547,6 +577,7 @@ export type UserUncheckedCreateWithoutChatMessagesInput = {
   updatedAt?: Date | string
   goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
   mealEntries?: Prisma.MealEntryUncheckedCreateNestedManyWithoutUserInput
+  weightEntries?: Prisma.WeightEntryUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutChatMessagesInput = {
@@ -574,6 +605,7 @@ export type UserUpdateWithoutChatMessagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
   mealEntries?: Prisma.MealEntryUpdateManyWithoutUserNestedInput
+  weightEntries?: Prisma.WeightEntryUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutChatMessagesInput = {
@@ -585,6 +617,71 @@ export type UserUncheckedUpdateWithoutChatMessagesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
   mealEntries?: Prisma.MealEntryUncheckedUpdateManyWithoutUserNestedInput
+  weightEntries?: Prisma.WeightEntryUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutWeightEntriesInput = {
+  id?: string
+  email: string
+  password: string
+  name?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  goals?: Prisma.GoalCreateNestedManyWithoutUserInput
+  mealEntries?: Prisma.MealEntryCreateNestedManyWithoutUserInput
+  chatMessages?: Prisma.ChatMessageCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutWeightEntriesInput = {
+  id?: string
+  email: string
+  password: string
+  name?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  goals?: Prisma.GoalUncheckedCreateNestedManyWithoutUserInput
+  mealEntries?: Prisma.MealEntryUncheckedCreateNestedManyWithoutUserInput
+  chatMessages?: Prisma.ChatMessageUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutWeightEntriesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutWeightEntriesInput, Prisma.UserUncheckedCreateWithoutWeightEntriesInput>
+}
+
+export type UserUpsertWithoutWeightEntriesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutWeightEntriesInput, Prisma.UserUncheckedUpdateWithoutWeightEntriesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWeightEntriesInput, Prisma.UserUncheckedCreateWithoutWeightEntriesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutWeightEntriesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutWeightEntriesInput, Prisma.UserUncheckedUpdateWithoutWeightEntriesInput>
+}
+
+export type UserUpdateWithoutWeightEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  goals?: Prisma.GoalUpdateManyWithoutUserNestedInput
+  mealEntries?: Prisma.MealEntryUpdateManyWithoutUserNestedInput
+  chatMessages?: Prisma.ChatMessageUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutWeightEntriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  password?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  goals?: Prisma.GoalUncheckedUpdateManyWithoutUserNestedInput
+  mealEntries?: Prisma.MealEntryUncheckedUpdateManyWithoutUserNestedInput
+  chatMessages?: Prisma.ChatMessageUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -596,12 +693,14 @@ export type UserCountOutputType = {
   goals: number
   mealEntries: number
   chatMessages: number
+  weightEntries: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   goals?: boolean | UserCountOutputTypeCountGoalsArgs
   mealEntries?: boolean | UserCountOutputTypeCountMealEntriesArgs
   chatMessages?: boolean | UserCountOutputTypeCountChatMessagesArgs
+  weightEntries?: boolean | UserCountOutputTypeCountWeightEntriesArgs
 }
 
 /**
@@ -635,6 +734,13 @@ export type UserCountOutputTypeCountChatMessagesArgs<ExtArgs extends runtime.Typ
   where?: Prisma.ChatMessageWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountWeightEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WeightEntryWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -646,6 +752,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   goals?: boolean | Prisma.User$goalsArgs<ExtArgs>
   mealEntries?: boolean | Prisma.User$mealEntriesArgs<ExtArgs>
   chatMessages?: boolean | Prisma.User$chatMessagesArgs<ExtArgs>
+  weightEntries?: boolean | Prisma.User$weightEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -681,6 +788,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   goals?: boolean | Prisma.User$goalsArgs<ExtArgs>
   mealEntries?: boolean | Prisma.User$mealEntriesArgs<ExtArgs>
   chatMessages?: boolean | Prisma.User$chatMessagesArgs<ExtArgs>
+  weightEntries?: boolean | Prisma.User$weightEntriesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -692,6 +800,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     goals: Prisma.$GoalPayload<ExtArgs>[]
     mealEntries: Prisma.$MealEntryPayload<ExtArgs>[]
     chatMessages: Prisma.$ChatMessagePayload<ExtArgs>[]
+    weightEntries: Prisma.$WeightEntryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1097,6 +1206,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   goals<T extends Prisma.User$goalsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$goalsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GoalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   mealEntries<T extends Prisma.User$mealEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mealEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$MealEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   chatMessages<T extends Prisma.User$chatMessagesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$chatMessagesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChatMessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  weightEntries<T extends Prisma.User$weightEntriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$weightEntriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WeightEntryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1589,6 +1699,30 @@ export type User$chatMessagesArgs<ExtArgs extends runtime.Types.Extensions.Inter
   take?: number
   skip?: number
   distinct?: Prisma.ChatMessageScalarFieldEnum | Prisma.ChatMessageScalarFieldEnum[]
+}
+
+/**
+ * User.weightEntries
+ */
+export type User$weightEntriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WeightEntry
+   */
+  select?: Prisma.WeightEntrySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WeightEntry
+   */
+  omit?: Prisma.WeightEntryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WeightEntryInclude<ExtArgs> | null
+  where?: Prisma.WeightEntryWhereInput
+  orderBy?: Prisma.WeightEntryOrderByWithRelationInput | Prisma.WeightEntryOrderByWithRelationInput[]
+  cursor?: Prisma.WeightEntryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WeightEntryScalarFieldEnum | Prisma.WeightEntryScalarFieldEnum[]
 }
 
 /**

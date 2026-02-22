@@ -1,6 +1,8 @@
 import { Response } from 'express';
 import { AuthRequest } from '../middleware/auth';
 import { prisma } from '../lib/prisma';
+import { ReportSummaryQuerySchema } from '../schemas/reportValidationSchema';
+import { getNutritionSummary, getMicronutrientsSummary } from '../services/reportService';
 
 export const getWeeklyTrend = async (req: AuthRequest, res: Response) => {
   try {
@@ -198,6 +200,19 @@ export const getGoalComparison = async (req: AuthRequest, res: Response) => {
       { calories: 0, protein: 0, carbs: 0, fat: 0 }
     );
 
+    // Aggregate micronutrients from meals
+    const actualMicronutrients: Record<string, number> = {};
+    meals.forEach((meal) => {
+      if (meal.micronutrients && typeof meal.micronutrients === 'object') {
+        const micronutrients = meal.micronutrients as Record<string, any>;
+        Object.entries(micronutrients).forEach(([key, value]) => {
+          if (typeof value === 'number' && !isNaN(value)) {
+            actualMicronutrients[key] = (actualMicronutrients[key] || 0) + value;
+          }
+        });
+      }
+    });
+
     res.json({
       hasGoal: true,
       goal: {
@@ -205,8 +220,15 @@ export const getGoalComparison = async (req: AuthRequest, res: Response) => {
         protein: goal.dailyProtein || 0,
         carbs: goal.dailyCarbs || 0,
         fat: goal.dailyFat || 0,
+        weightGoal: goal.weightGoal || null,
+        micronutrients: goal.micronutrients && typeof goal.micronutrients === 'object' 
+          ? (goal.micronutrients as Record<string, number>)
+          : {},
       },
-      actual,
+      actual: {
+        ...actual,
+        micronutrients: actualMicronutrients,
+      },
       difference: {
         calories: actual.calories - goal.dailyCalories,
         protein: actual.protein - (goal.dailyProtein || 0),
@@ -216,6 +238,82 @@ export const getGoalComparison = async (req: AuthRequest, res: Response) => {
     });
   } catch (error) {
     console.error('Get goal comparison error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+/**
+ * GET /api/reports/summary
+ * Get nutrition summary grouped by day or week
+ */
+export const getSummary = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId!;
+
+    // Validate query parameters
+    const validationResult = ReportSummaryQuerySchema.safeParse(req.query);
+    if (!validationResult.success) {
+      return res.status(400).json({
+        message: 'Validation error',
+        errors: validationResult.error.issues.map((issue) => ({
+          path: issue.path.join('.'),
+          message: issue.message,
+        })),
+      });
+    }
+
+    const params = validationResult.data;
+
+    // Get nutrition summary from service
+    const summary = await getNutritionSummary(userId, params);
+
+    // Return structured JSON ready for charts
+    res.json({
+      groupBy: params.groupBy,
+      startDate: params.startDate,
+      endDate: params.endDate,
+      data: summary,
+    });
+  } catch (error) {
+    console.error('Get summary error:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
+/**
+ * GET /api/reports/micronutrients
+ * Get micronutrients summary grouped by day or week
+ */
+export const getMicronutrients = async (req: AuthRequest, res: Response) => {
+  try {
+    const userId = req.userId!;
+
+    // Validate query parameters
+    const validationResult = ReportSummaryQuerySchema.safeParse(req.query);
+    if (!validationResult.success) {
+      return res.status(400).json({
+        message: 'Validation error',
+        errors: validationResult.error.issues.map((issue) => ({
+          path: issue.path.join('.'),
+          message: issue.message,
+        })),
+      });
+    }
+
+    const params = validationResult.data;
+
+    // Get micronutrients summary from service
+    const summary = await getMicronutrientsSummary(userId, params);
+
+    // Return structured JSON ready for charts
+    res.json({
+      groupBy: params.groupBy,
+      startDate: params.startDate,
+      endDate: params.endDate,
+      data: summary,
+    });
+  } catch (error) {
+    console.error('Get micronutrients error:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
 };

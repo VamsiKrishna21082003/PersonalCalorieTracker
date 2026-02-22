@@ -20,6 +20,7 @@ interface Meal {
   carbs?: number | null;
   fat?: number | null;
   date: string;
+  micronutrients?: any;
 }
 
 export default function MealsPage() {

@@ -21,6 +21,7 @@ interface Goal {
   endDate?: string | null;
   isActive: boolean;
   createdAt: string;
+  micronutrients?: any;
 }
 
 export default function GoalsPage() {
@@ -38,6 +39,15 @@ export default function GoalsPage() {
       ]);
       setGoals(goalsRes.data);
       setCurrentGoal(currentRes?.data || null);
+      
+      // Debug logging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Goals fetched:', {
+          goals: goalsRes.data,
+          currentGoal: currentRes?.data,
+          hasMicronutrients: currentRes?.data?.micronutrients ? Object.keys(currentRes.data.micronutrients).length : 0,
+        });
+      }
     } catch (error) {
       console.error('Failed to fetch goals:', error);
     } finally {
@@ -94,7 +104,7 @@ export default function GoalsPage() {
               <h2 className="text-lg font-semibold text-gray-900 mb-6">
                 {editingGoal ? 'Edit Goal' : 'Create New Goal'}
               </h2>
-              <GoalForm goal={editingGoal} onSuccess={handleSuccess} />
+              <GoalForm key={editingGoal?.id || 'new-goal'} goal={editingGoal} onSuccess={handleSuccess} />
             </Card>
           )}
 
@@ -152,7 +162,29 @@ export default function GoalsPage() {
                     <p className="text-xs text-gray-500 mt-0.5">grams</p>
                   </div>
                 )}
+                {currentGoal.weightGoal && (
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Weight Goal</p>
+                    <p className="text-xl font-semibold text-gray-900">{currentGoal.weightGoal}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">kg</p>
+                  </div>
+                )}
               </div>
+              {currentGoal.micronutrients && Object.keys(currentGoal.micronutrients).length > 0 && (
+                <div className="mt-6 pt-6 border-t border-gray-200">
+                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-4">Micronutrient Goals</p>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    {Object.entries(currentGoal.micronutrients).map(([key, value]) => (
+                      <div key={key}>
+                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                          {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim()}
+                        </p>
+                        <p className="text-sm font-semibold text-gray-900">{value as number}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </Card>
           )}
 
@@ -191,8 +223,8 @@ export default function GoalsPage() {
                           {format(new Date(goal.startDate), 'MMM d, yyyy')}
                           {goal.endDate && ` - ${format(new Date(goal.endDate), 'MMM d, yyyy')}`}
                         </p>
-                        {(goal.dailyProtein || goal.dailyCarbs || goal.dailyFat) && (
-                          <div className="grid grid-cols-3 gap-4 pt-4 border-t border-gray-100">
+                        {(goal.dailyProtein || goal.dailyCarbs || goal.dailyFat || goal.weightGoal) && (
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-gray-100">
                             {goal.dailyProtein && (
                               <div>
                                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Protein</p>
@@ -211,6 +243,27 @@ export default function GoalsPage() {
                                 <p className="text-sm font-semibold text-gray-900">{goal.dailyFat}g</p>
                               </div>
                             )}
+                            {goal.weightGoal && (
+                              <div>
+                                <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Weight Goal</p>
+                                <p className="text-sm font-semibold text-gray-900">{goal.weightGoal}kg</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        {goal.micronutrients && Object.keys(goal.micronutrients).length > 0 && (
+                          <div className="mt-4 pt-4 border-t border-gray-100">
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Micronutrient Goals</p>
+                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                              {Object.entries(goal.micronutrients).map(([key, value]) => (
+                                <div key={key}>
+                                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                                    {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim()}
+                                  </p>
+                                  <p className="text-sm font-semibold text-gray-900">{value as number}</p>
+                                </div>
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>

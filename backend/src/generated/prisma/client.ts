@@ -57,3 +57,8 @@ export type MealEntry = Prisma.MealEntryModel
  * 
  */
 export type ChatMessage = Prisma.ChatMessageModel
+/**
+ * Model WeightEntry
+ * 
+ */
+export type WeightEntry = Prisma.WeightEntryModel

@@ -112,6 +112,9 @@ export default function MealList({ meals, onUpdate }: MealListProps) {
                   Fat
                 </th>
                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Micronutrients
+                </th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Date
                 </th>
                 <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -145,6 +148,27 @@ export default function MealList({ meals, onUpdate }: MealListProps) {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm text-gray-600">{meal.fat ? `${meal.fat}g` : '-'}</span>
+                  </td>
+                  <td className="px-6 py-4">
+                    {meal.micronutrients && Object.keys(meal.micronutrients).length > 0 ? (
+                      <div className="text-xs text-gray-600 max-w-xs">
+                        {Object.entries(meal.micronutrients)
+                          .slice(0, 3)
+                          .map(([key, value]) => {
+                            const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim();
+                            return (
+                              <div key={key} className="truncate">
+                                {formattedKey}: {typeof value === 'number' ? value.toFixed(1) : value}
+                              </div>
+                            );
+                          })}
+                        {Object.keys(meal.micronutrients).length > 3 && (
+                          <div className="text-gray-400">+{Object.keys(meal.micronutrients).length - 3} more</div>
+                        )}
+                      </div>
+                    ) : (
+                      <span className="text-sm text-gray-400">-</span>
+                    )}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <span className="text-sm text-gray-600">

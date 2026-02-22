@@ -54,7 +54,8 @@ export const ModelName = {
   User: 'User',
   Goal: 'Goal',
   MealEntry: 'MealEntry',
-  ChatMessage: 'ChatMessage'
+  ChatMessage: 'ChatMessage',
+  WeightEntry: 'WeightEntry'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -96,6 +97,7 @@ export const GoalScalarFieldEnum = {
   startDate: 'startDate',
   endDate: 'endDate',
   isActive: 'isActive',
+  micronutrients: 'micronutrients',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -132,6 +134,17 @@ export const ChatMessageScalarFieldEnum = {
 } as const
 
 export type ChatMessageScalarFieldEnum = (typeof ChatMessageScalarFieldEnum)[keyof typeof ChatMessageScalarFieldEnum]
+
+
+export const WeightEntryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  weight: 'weight',
+  date: 'date',
+  createdAt: 'createdAt'
+} as const
+
+export type WeightEntryScalarFieldEnum = (typeof WeightEntryScalarFieldEnum)[keyof typeof WeightEntryScalarFieldEnum]
 
 
 export const SortOrder = {

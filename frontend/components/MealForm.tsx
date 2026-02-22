@@ -25,6 +25,7 @@ interface MealFormProps {
 }
 
 export default function MealForm({ meal, onSuccess, initialData }: MealFormProps) {
+  const [showMicronutrients, setShowMicronutrients] = useState(false);
   const [formData, setFormData] = useState({
     foodName: initialData?.foodName || meal?.foodName || '',
     quantity: initialData?.quantity || meal?.quantity || '',
@@ -46,8 +47,27 @@ export default function MealForm({ meal, onSuccess, initialData }: MealFormProps
         ...initialData,
         date: initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : prev.date,
       }));
+      // Show micronutrients section if meal has micronutrients
+      if (initialData.micronutrients && Object.keys(initialData.micronutrients).length > 0) {
+        setShowMicronutrients(true);
+      }
     }
-  }, [initialData]);
+    // Show micronutrients section if editing a meal with micronutrients
+    if (meal?.micronutrients && Object.keys(meal.micronutrients).length > 0) {
+      setShowMicronutrients(true);
+    }
+  }, [initialData, meal]);
+
+  const handleMicronutrientChange = (key: string, value: string) => {
+    const numValue = value === '' ? undefined : parseFloat(value);
+    setFormData({
+      ...formData,
+      micronutrients: {
+        ...formData.micronutrients,
+        [key]: numValue !== undefined && !isNaN(numValue) ? numValue : undefined,
+      },
+    });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -55,11 +75,21 @@ export default function MealForm({ meal, onSuccess, initialData }: MealFormProps
     setLoading(true);
 
     try {
+      // Clean micronutrients - remove undefined/null values
+      const cleanedMicronutrients = Object.fromEntries(
+        Object.entries(formData.micronutrients || {}).filter(([_, value]) => value !== undefined && value !== null && value !== '')
+      );
+
+      const submitData = {
+        ...formData,
+        micronutrients: Object.keys(cleanedMicronutrients).length > 0 ? cleanedMicronutrients : undefined,
+      };
+
       if (meal) {
-        await api.put(`/api/meals/${meal.id}`, formData);
+        await api.put(`/api/meals/${meal.id}`, submitData);
         toast.success('Meal updated successfully');
       } else {
-        await api.post('/api/meals', formData);
+        await api.post('/api/meals', submitData);
         toast.success('Meal added successfully');
         // Reset form for new entries
         setFormData({
@@ -73,6 +103,7 @@ export default function MealForm({ meal, onSuccess, initialData }: MealFormProps
           date: new Date().toISOString().split('T')[0],
           micronutrients: {},
         });
+        setShowMicronutrients(false);
       }
       onSuccess?.();
     } catch (err: any) {
@@ -212,6 +243,189 @@ export default function MealForm({ meal, onSuccess, initialData }: MealFormProps
             onChange={(e) => setFormData({ ...formData, fat: e.target.value })}
           />
         </div>
+      </div>
+
+      {/* Micronutrients Section */}
+      <div className="border-t border-gray-200 pt-6">
+        <button
+          type="button"
+          onClick={() => setShowMicronutrients(!showMicronutrients)}
+          className="flex items-center justify-between w-full text-left mb-4"
+        >
+          <div>
+            <h3 className="text-sm font-medium text-gray-900">Micronutrients (Optional)</h3>
+            <p className="text-xs text-gray-500 mt-0.5">Add vitamins and minerals</p>
+          </div>
+          <svg
+            className={`w-5 h-5 text-gray-500 transition-transform ${showMicronutrients ? 'transform rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {showMicronutrients && (
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            <div>
+              <label htmlFor="vitaminA" className="block text-sm font-medium text-gray-700 mb-2">
+                Vitamin A (mcg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="vitaminA"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.vitaminA || ''}
+                onChange={(e) => handleMicronutrientChange('vitaminA', e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="vitaminC" className="block text-sm font-medium text-gray-700 mb-2">
+                Vitamin C (mg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="vitaminC"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.vitaminC || ''}
+                onChange={(e) => handleMicronutrientChange('vitaminC', e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="iron" className="block text-sm font-medium text-gray-700 mb-2">
+                Iron (mg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="iron"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.iron || ''}
+                onChange={(e) => handleMicronutrientChange('iron', e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="calcium" className="block text-sm font-medium text-gray-700 mb-2">
+                Calcium (mg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="calcium"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.calcium || ''}
+                onChange={(e) => handleMicronutrientChange('calcium', e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="vitaminD" className="block text-sm font-medium text-gray-700 mb-2">
+                Vitamin D (IU)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="vitaminD"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.vitaminD || ''}
+                onChange={(e) => handleMicronutrientChange('vitaminD', e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="vitaminE" className="block text-sm font-medium text-gray-700 mb-2">
+                Vitamin E (mg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="vitaminE"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.vitaminE || ''}
+                onChange={(e) => handleMicronutrientChange('vitaminE', e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="vitaminK" className="block text-sm font-medium text-gray-700 mb-2">
+                Vitamin K (mcg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="vitaminK"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.vitaminK || ''}
+                onChange={(e) => handleMicronutrientChange('vitaminK', e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="magnesium" className="block text-sm font-medium text-gray-700 mb-2">
+                Magnesium (mg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="magnesium"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.magnesium || ''}
+                onChange={(e) => handleMicronutrientChange('magnesium', e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="zinc" className="block text-sm font-medium text-gray-700 mb-2">
+                Zinc (mg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="zinc"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.zinc || ''}
+                onChange={(e) => handleMicronutrientChange('zinc', e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="potassium" className="block text-sm font-medium text-gray-700 mb-2">
+                Potassium (mg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="potassium"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.potassium || ''}
+                onChange={(e) => handleMicronutrientChange('potassium', e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="sodium" className="block text-sm font-medium text-gray-700 mb-2">
+                Sodium (mg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="sodium"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.sodium || ''}
+                onChange={(e) => handleMicronutrientChange('sodium', e.target.value)}
+              />
+            </div>
+            <div>
+              <label htmlFor="phosphorus" className="block text-sm font-medium text-gray-700 mb-2">
+                Phosphorus (mg)
+              </label>
+              <input
+                type="number"
+                step="0.1"
+                id="phosphorus"
+                className="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 text-sm transition-colors"
+                value={formData.micronutrients?.phosphorus || ''}
+                onChange={(e) => handleMicronutrientChange('phosphorus', e.target.value)}
+              />
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="flex justify-end gap-3 pt-4">

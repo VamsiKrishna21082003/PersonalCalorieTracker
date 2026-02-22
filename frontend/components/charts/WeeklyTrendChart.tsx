@@ -12,9 +12,20 @@ interface WeeklyTrendData {
 
 interface WeeklyTrendChartProps {
   data: WeeklyTrendData[];
+  groupBy?: 'day' | 'week';
 }
 
-export default function WeeklyTrendChart({ data }: WeeklyTrendChartProps) {
+export default function WeeklyTrendChart({ data, groupBy }: WeeklyTrendChartProps) {
+  const formatDate = (value: string) => {
+    const date = new Date(value);
+    return `${date.getMonth() + 1}/${date.getDate()}`;
+  };
+
+  const formatTooltipLabel = (value: string) => {
+    const date = new Date(value);
+    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  };
+
   return (
     <ResponsiveContainer width="100%" height={300}>
       <LineChart data={data}>
@@ -22,18 +33,12 @@ export default function WeeklyTrendChart({ data }: WeeklyTrendChartProps) {
         <XAxis
           dataKey="date"
           tick={{ fill: '#6b7280' }}
-          tickFormatter={(value) => {
-            const date = new Date(value);
-            return `${date.getMonth() + 1}/${date.getDate()}`;
-          }}
+          tickFormatter={formatDate}
         />
         <YAxis tick={{ fill: '#6b7280' }} />
         <Tooltip
           contentStyle={{ backgroundColor: '#ffffff', border: '1px solid #e5e7eb', borderRadius: '8px', color: '#111827' }}
-          labelFormatter={(value) => {
-            const date = new Date(value);
-            return date.toLocaleDateString();
-          }}
+          labelFormatter={formatTooltipLabel}
         />
         <Legend wrapperStyle={{ color: '#6b7280' }} />
         <Line type="monotone" dataKey="calories" stroke="#2563eb" strokeWidth={2} name="Calories (kcal)" dot={{ fill: '#2563eb', r: 3 }} />

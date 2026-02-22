@@ -387,7 +387,8 @@ export const ModelName = {
   User: 'User',
   Goal: 'Goal',
   MealEntry: 'MealEntry',
-  ChatMessage: 'ChatMessage'
+  ChatMessage: 'ChatMessage',
+  WeightEntry: 'WeightEntry'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -403,7 +404,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "goal" | "mealEntry" | "chatMessage"
+    modelProps: "user" | "goal" | "mealEntry" | "chatMessage" | "weightEntry"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -703,6 +704,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    WeightEntry: {
+      payload: Prisma.$WeightEntryPayload<ExtArgs>
+      fields: Prisma.WeightEntryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.WeightEntryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeightEntryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.WeightEntryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeightEntryPayload>
+        }
+        findFirst: {
+          args: Prisma.WeightEntryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeightEntryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.WeightEntryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeightEntryPayload>
+        }
+        findMany: {
+          args: Prisma.WeightEntryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeightEntryPayload>[]
+        }
+        create: {
+          args: Prisma.WeightEntryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeightEntryPayload>
+        }
+        createMany: {
+          args: Prisma.WeightEntryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.WeightEntryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeightEntryPayload>[]
+        }
+        delete: {
+          args: Prisma.WeightEntryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeightEntryPayload>
+        }
+        update: {
+          args: Prisma.WeightEntryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeightEntryPayload>
+        }
+        deleteMany: {
+          args: Prisma.WeightEntryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.WeightEntryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.WeightEntryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeightEntryPayload>[]
+        }
+        upsert: {
+          args: Prisma.WeightEntryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$WeightEntryPayload>
+        }
+        aggregate: {
+          args: Prisma.WeightEntryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateWeightEntry>
+        }
+        groupBy: {
+          args: Prisma.WeightEntryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WeightEntryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.WeightEntryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.WeightEntryCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -765,6 +840,7 @@ export const GoalScalarFieldEnum = {
   startDate: 'startDate',
   endDate: 'endDate',
   isActive: 'isActive',
+  micronutrients: 'micronutrients',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -801,6 +877,17 @@ export const ChatMessageScalarFieldEnum = {
 } as const
 
 export type ChatMessageScalarFieldEnum = (typeof ChatMessageScalarFieldEnum)[keyof typeof ChatMessageScalarFieldEnum]
+
+
+export const WeightEntryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  weight: 'weight',
+  date: 'date',
+  createdAt: 'createdAt'
+} as const
+
+export type WeightEntryScalarFieldEnum = (typeof WeightEntryScalarFieldEnum)[keyof typeof WeightEntryScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -1025,6 +1112,7 @@ export type GlobalOmitConfig = {
   goal?: Prisma.GoalOmit
   mealEntry?: Prisma.MealEntryOmit
   chatMessage?: Prisma.ChatMessageOmit
+  weightEntry?: Prisma.WeightEntryOmit
 }
 
 /* Types for Logging */

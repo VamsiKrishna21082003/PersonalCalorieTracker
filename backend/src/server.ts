@@ -67,6 +67,7 @@ import aiRoutes from './routes/ai';
 import reportRoutes from './routes/reports';
 import chatRoutes from './routes/chat';
 import importRoutes from './routes/import';
+import weightRoutes from './routes/weight';
 app.use('/api/auth', authRoutes);
 app.use('/api/goals', goalRoutes);
 app.use('/api/meals', mealRoutes);
@@ -75,6 +76,7 @@ app.use('/api/ai', aiRoutes);
 app.use('/api/reports', reportRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/import', importRoutes);
+app.use('/api/weight', weightRoutes);
 
 // Error handling middleware (must be after routes)
 app.use(errorHandler);

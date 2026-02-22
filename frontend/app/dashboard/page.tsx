@@ -5,6 +5,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import WeeklyTrendChart from '@/components/charts/WeeklyTrendChart';
 import MacroChart from '@/components/charts/MacroChart';
 import GoalComparisonChart from '@/components/charts/GoalComparisonChart';
+import MicronutrientChart from '@/components/charts/MicronutrientChart';
 import Card from '@/components/ui/Card';
 import EmptyState from '@/components/ui/EmptyState';
 import InsightsPanel from '@/components/InsightsPanel';
@@ -15,7 +16,7 @@ import api from '@/lib/api';
 export default function DashboardPage() {
   const [weeklyTrend, setWeeklyTrend] = useState<any[]>([]);
   const [macroBreakdown, setMacroBreakdown] = useState<any>(null);
-  const [microSummary, setMicroSummary] = useState<Record<string, number>>({});
+  const [micronutrientData, setMicronutrientData] = useState<any[]>([]);
   const [goalComparison, setGoalComparison] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [dateRange, setDateRange] = useState({
@@ -26,31 +27,140 @@ export default function DashboardPage() {
   const fetchReports = async () => {
     setLoading(true);
     try {
-      const params = new URLSearchParams({
-        startDate: dateRange.startDate,
-        endDate: dateRange.endDate,
+      const normalizeMicronutrients = (input: unknown): Record<string, number> => {
+        if (!input || typeof input !== 'object') {
+          return {};
+        }
+
+        return Object.fromEntries(
+          Object.entries(input as Record<string, unknown>).filter(
+            ([, value]) => typeof value === 'number' && Number.isFinite(value)
+          )
+        ) as Record<string, number>;
+      };
+
+      const baseParams = new URLSearchParams({
+        startDate: `${dateRange.startDate}T00:00:00Z`,
+        endDate: `${dateRange.endDate}T23:59:59Z`,
       });
 
-      const [trendRes, macroRes, microRes, goalRes] = await Promise.all([
-        api.get(`/api/reports/weekly?${params.toString()}`),
-        api.get(`/api/reports/macros?${params.toString()}`),
-        api.get(`/api/reports/micros?${params.toString()}`),
-        api.get(`/api/reports/goal-comparison?${params.toString()}`),
+      // Fetch summary with groupBy parameter (always use 'day' for simplicity)
+      const summaryParams = new URLSearchParams({
+        startDate: `${dateRange.startDate}T00:00:00Z`,
+        endDate: `${dateRange.endDate}T23:59:59Z`,
+        groupBy: 'day',
+      });
+
+      const [summaryRes, macroRes, microRes, micronutrientRes, goalRes] = await Promise.all([
+        api.get(`/api/reports/summary?${summaryParams.toString()}`).catch((err) => {
+          console.error('Failed to fetch summary:', err);
+          return { data: { data: [] } };
+        }),
+        api.get(`/api/reports/macros?${baseParams.toString()}`).catch((err) => {
+          console.error('Failed to fetch macros:', err);
+          return { data: {} };
+        }),
+        api.get(`/api/reports/micros?${baseParams.toString()}`).catch((err) => {
+          console.error('Failed to fetch micros:', err);
+          return { data: {} };
+        }),
+        api.get(`/api/reports/micronutrients?${summaryParams.toString()}`).catch((err) => {
+          console.error('Failed to fetch micronutrients:', err);
+          return { data: { data: [] } };
+        }),
+        api.get(`/api/reports/goal-comparison?${baseParams.toString()}`).catch((err) => {
+          console.error('Failed to fetch goal comparison:', err);
+          return { data: { hasGoal: false } };
+        }),
       ]);
 
-      setWeeklyTrend(trendRes.data);
-      setMacroBreakdown(macroRes.data);
-      setMicroSummary(microRes.data);
-      setGoalComparison(goalRes.data);
+      // Transform summary data to match WeeklyTrendChart format
+      // The API returns { data: [{ period, calories, protein, carbs, fat }] }
+      const summaryData = summaryRes?.data?.data || [];
+      const transformedTrend = Array.isArray(summaryData)
+        ? summaryData.map((item: any) => {
+            // Ensure period is a valid date string
+            let dateStr = item.period;
+            if (dateStr instanceof Date) {
+              dateStr = dateStr.toISOString();
+            } else if (typeof dateStr !== 'string') {
+              dateStr = new Date(dateStr).toISOString();
+            }
+            return {
+              date: dateStr,
+              calories: Number(item.calories) || 0,
+              protein: Number(item.protein) || 0,
+              carbs: Number(item.carbs) || 0,
+              fat: Number(item.fat) || 0,
+            };
+          })
+        : [];
+
+      setWeeklyTrend(transformedTrend);
+      setMacroBreakdown(macroRes?.data || {});
+      const summaryMicronutrients = normalizeMicronutrients(microRes?.data);
+
+      // Prefer grouped micronutrient data from /micronutrients endpoint.
+      // If empty/unavailable, fall back to the /micros summary or goal targets.
+      let micronutrientDataArray = Array.isArray(micronutrientRes?.data?.data)
+        ? micronutrientRes.data.data
+        : [];
+
+      if (micronutrientDataArray.length === 0 && Object.keys(summaryMicronutrients).length > 0) {
+        micronutrientDataArray = [
+          {
+            period: `${dateRange.endDate}T00:00:00.000Z`,
+            micronutrients: summaryMicronutrients,
+          },
+        ];
+      }
+
+      const goalMicronutrients = normalizeMicronutrients(goalRes?.data?.goal?.micronutrients);
+      if (micronutrientDataArray.length === 0 && Object.keys(goalMicronutrients).length > 0) {
+        micronutrientDataArray = [
+          {
+            period: `${dateRange.endDate}T00:00:00.000Z`,
+            micronutrients: goalMicronutrients,
+          },
+        ];
+      }
+
+      setMicronutrientData(micronutrientDataArray);
+      
+      setGoalComparison(goalRes?.data || { hasGoal: false });
+
+      // Log in development for debugging
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Dashboard data loaded:', {
+          trendCount: transformedTrend.length,
+          trendData: transformedTrend,
+          hasMacros: !!macroRes?.data,
+          macroData: macroRes?.data,
+          hasMicros: Object.keys(summaryMicronutrients).length > 0,
+          microData: summaryMicronutrients,
+          micronutrientCount: micronutrientRes?.data?.data?.length || 0,
+          micronutrientData: micronutrientDataArray,
+          hasGoal: goalRes?.data?.hasGoal,
+          dateRange,
+          summaryResData: summaryRes?.data,
+        });
+      }
     } catch (error) {
       console.error('Failed to fetch reports:', error);
+      // Set empty states on error
+      setWeeklyTrend([]);
+      setMacroBreakdown({});
+      setMicronutrientData([]);
+      setGoalComparison({ hasGoal: false });
     } finally {
       setLoading(false);
     }
   };
 
+
   useEffect(() => {
     fetchReports();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dateRange]);
 
   if (loading) {
@@ -321,9 +431,9 @@ export default function DashboardPage() {
 
           {/* Charts Grid */}
           <div className="grid grid-cols-1 gap-6">
-            {/* Weekly Trend Chart */}
+            {/* Trend Chart */}
             <Card
-              header={<h2 className="text-base font-semibold text-gray-900">Weekly Calorie Trend</h2>}
+              header={<h2 className="text-base font-semibold text-gray-900">Calorie Trend</h2>}
             >
               {weeklyTrend.length > 0 ? (
                 <div className="pt-4">
@@ -407,21 +517,23 @@ export default function DashboardPage() {
             </Card>
           </div>
 
-          {/* Micronutrient Summary */}
-          {Object.keys(microSummary).length > 0 && (
-            <Card
-              header={<h2 className="text-base font-semibold text-gray-900">Micronutrient Summary</h2>}
-            >
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {Object.entries(microSummary).map(([key, value]) => (
-                  <div key={key} className="p-4 bg-gray-50 rounded-lg border border-gray-200 hover:bg-gray-100 transition-colors">
-                    <p className="text-sm text-gray-500 capitalize mb-2">{key.replace(/([A-Z])/g, ' $1').trim()}</p>
-                    <p className="text-lg font-semibold text-gray-900">{typeof value === 'number' ? value.toFixed(2) : value}</p>
-                  </div>
-                ))}
+          {/* Micronutrient Summary Chart */}
+          <Card
+            header={<h2 className="text-base font-semibold text-gray-900">
+              Micronutrient Summary
+            </h2>}
+          >
+            {micronutrientData && Array.isArray(micronutrientData) && micronutrientData.length > 0 ? (
+              <div className="pt-4">
+                <MicronutrientChart data={micronutrientData} />
               </div>
-            </Card>
-          )}
+            ) : (
+              <EmptyState
+                title="No micronutrient data"
+                description="No micronutrient data available for the selected period. Add micronutrients when logging meals to see them here."
+              />
+            )}
+          </Card>
         </div>
       </div>
     </ProtectedRoute>
