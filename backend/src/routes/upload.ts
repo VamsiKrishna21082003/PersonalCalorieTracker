@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import multer from 'multer';
+import { Router, Request, Response } from 'express';
+import multer, { FileFilterCallback } from 'multer';
 import { authenticate } from '../middleware/auth';
 import { uploadImage } from '../services/cloudinaryService';
 
@@ -9,7 +9,7 @@ const upload = multer({
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
     if (file.mimetype.startsWith('image/')) {
       cb(null, true);
     } else {
@@ -20,7 +20,7 @@ const upload = multer({
 
 router.use(authenticate);
 
-router.post('/image', upload.single('image'), async (req, res) => {
+router.post('/image', upload.single('image'), async (req: Request, res: Response) => {
   try {
     if (!req.file) {
       return res.status(400).json({ message: 'No image file provided' });

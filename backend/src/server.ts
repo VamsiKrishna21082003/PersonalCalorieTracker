@@ -54,7 +54,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (req: express.Request, res: express.Response): void => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
 
@@ -82,7 +82,7 @@ app.use('/api/weight', weightRoutes);
 app.use(errorHandler);
 
 // 404 handler
-app.use((req, res) => {
+app.use((req: express.Request, res: express.Response): void => {
   res.status(404).json({ message: 'Route not found' });
 });
 

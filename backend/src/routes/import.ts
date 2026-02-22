@@ -1,5 +1,5 @@
-import { Router } from 'express';
-import multer from 'multer';
+import { Router, Request } from 'express';
+import multer, { FileFilterCallback } from 'multer';
 import { authenticate } from '../middleware/auth';
 import { importPDF, confirmImport } from '../controllers/importController';
 import { asyncHandler } from '../middleware/errorHandler';
@@ -10,7 +10,7 @@ const upload = multer({
   limits: {
     fileSize: 10 * 1024 * 1024, // 10MB
   },
-  fileFilter: (req, file, cb) => {
+  fileFilter: (req: Request, file: Express.Multer.File, cb: FileFilterCallback) => {
     if (file.mimetype === 'application/pdf') {
       cb(null, true);
     } else {
