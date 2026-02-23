@@ -24,6 +24,22 @@ export default function DashboardPage() {
     endDate: new Date().toISOString().split('T')[0],
   });
 
+  // Aggregate micronutrient data from array format
+  const aggregateMicronutrients = (data: any[]): Record<string, number> => {
+    const aggregated: Record<string, number> = {};
+    data.forEach((item) => {
+      if (item.micronutrients && typeof item.micronutrients === 'object') {
+        Object.entries(item.micronutrients).forEach(([key, value]) => {
+          const numValue = Number(value);
+          if (!isNaN(numValue) && isFinite(numValue)) {
+            aggregated[key] = (aggregated[key] || 0) + numValue;
+          }
+        });
+      }
+    });
+    return aggregated;
+  };
+
   const fetchReports = async () => {
     setLoading(true);
     try {
@@ -493,32 +509,37 @@ export default function DashboardPage() {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-12 gap-6">
             {/* Macro Breakdown */}
-            <Card
-              header={<h2 className="text-base font-semibold text-gray-900">Macro Breakdown</h2>}
-            >
-              {macroBreakdown ? (
-                <div className="pt-4">
-                  <MacroChart
-                    protein={macroBreakdown.protein}
-                    carbs={macroBreakdown.carbs}
-                    fat={macroBreakdown.fat}
-                    calories={macroBreakdown.calories}
+            <div className="col-span-12 lg:col-span-6">
+              <Card
+                header={<h2 className="text-base font-semibold text-gray-900">Macro Breakdown</h2>}
+              >
+                {macroBreakdown ? (
+                  <div className="pt-4">
+                    <MacroChart
+                      protein={macroBreakdown.protein}
+                      carbs={macroBreakdown.carbs}
+                      fat={macroBreakdown.fat}
+                      calories={macroBreakdown.calories}
+                      goalComparison={goalComparison}
+                      micronutrientData={aggregateMicronutrients(micronutrientData)}
+                    />
+                  </div>
+                ) : (
+                  <EmptyState
+                    title="No macro data"
+                    description="No macro nutrient data available for the selected period."
                   />
-                </div>
-              ) : (
-                <EmptyState
-                  title="No macro data"
-                  description="No macro nutrient data available for the selected period."
-                />
-              )}
-            </Card>
+                )}
+              </Card>
+            </div>
 
             {/* Goal Comparison */}
-            <Card
-              header={<h2 className="text-base font-semibold text-gray-900">Goal vs Actual</h2>}
-            >
+            <div className="col-span-12 lg:col-span-6">
+              <Card
+                header={<h2 className="text-base font-semibold text-gray-900">Goal vs Actual</h2>}
+              >
               {goalComparison?.hasGoal ? (
                 <div className="pt-4">
                   <GoalComparisonChart data={goalComparison} />
@@ -559,7 +580,8 @@ export default function DashboardPage() {
                   description={goalComparison?.message || 'Set a goal to see comparison with your actual intake.'}
                 />
               )}
-            </Card>
+              </Card>
+            </div>
           </div>
 
           {/* Micronutrient Summary Chart */}

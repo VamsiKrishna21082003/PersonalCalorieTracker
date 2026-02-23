@@ -38,6 +38,7 @@ export default function MealsPage() {
     totalPages: 0,
   });
   const [entryMode, setEntryMode] = useState<'manual' | 'ai' | 'pdf'>('manual');
+  const [showForm, setShowForm] = useState(false);
 
   const fetchMeals = async () => {
     setLoading(true);
@@ -88,9 +89,14 @@ export default function MealsPage() {
       <div className="flex-1 p-8 bg-gray-50">
         <div className="space-y-8">
           {/* Header */}
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Meal Entries</h1>
-            <p className="text-sm text-gray-600">Manage your meal entries and track nutrition</p>
+          <div className="flex justify-between items-start">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900 mb-1">Meal Entries</h1>
+              <p className="text-sm text-gray-600">Manage your meal entries and track nutrition</p>
+            </div>
+            <Button onClick={() => setShowForm(!showForm)}>
+              {showForm ? 'Hide Form' : 'Add Meal'}
+            </Button>
           </div>
 
           {/* Horizontal Filter Bar */}
@@ -149,53 +155,53 @@ export default function MealsPage() {
             </div>
           </Card>
 
-          {/* Meal Form */}
-          <Card>
-            <div className="flex border-b border-gray-200 mb-6 -mx-6 px-6">
-              <button
-                onClick={() => setEntryMode('manual')}
-                className={`px-4 py-2 font-medium text-sm transition-colors ${
-                  entryMode === 'manual'
-                    ? 'border-b-2 border-blue-600 text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                Manual Entry
-              </button>
-              <button
-                onClick={() => setEntryMode('ai')}
-                className={`px-4 py-2 font-medium text-sm transition-colors ${
-                  entryMode === 'ai'
-                    ? 'border-b-2 border-blue-600 text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                AI Extraction
-              </button>
-              <button
-                onClick={() => setEntryMode('pdf')}
-                className={`px-4 py-2 font-medium text-sm transition-colors ${
-                  entryMode === 'pdf'
-                    ? 'border-b-2 border-blue-600 text-gray-900'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-              >
-                PDF Import
-              </button>
-            </div>
-            {entryMode === 'manual' ? (
-              <MealForm onSuccess={fetchMeals} />
-            ) : entryMode === 'ai' ? (
-              <AIExtractionForm onSuccess={fetchMeals} />
-            ) : (
-              <PDFImport onSuccess={fetchMeals} />
-            )}
-          </Card>
+          {/* Meal Form - Collapsible */}
+          {showForm && (
+            <Card>
+              <div className="flex border-b border-gray-200 mb-6 -mx-6 px-6">
+                <button
+                  onClick={() => setEntryMode('manual')}
+                  className={`px-4 py-2 font-medium text-sm transition-colors ${
+                    entryMode === 'manual'
+                      ? 'border-b-2 border-blue-600 text-gray-900'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  Manual Entry
+                </button>
+                <button
+                  onClick={() => setEntryMode('ai')}
+                  className={`px-4 py-2 font-medium text-sm transition-colors ${
+                    entryMode === 'ai'
+                      ? 'border-b-2 border-blue-600 text-gray-900'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  AI Extraction
+                </button>
+                <button
+                  onClick={() => setEntryMode('pdf')}
+                  className={`px-4 py-2 font-medium text-sm transition-colors ${
+                    entryMode === 'pdf'
+                      ? 'border-b-2 border-blue-600 text-gray-900'
+                      : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                >
+                  PDF Import
+                </button>
+              </div>
+              {entryMode === 'manual' ? (
+                <MealForm onSuccess={() => { fetchMeals(); setShowForm(false); }} />
+              ) : entryMode === 'ai' ? (
+                <AIExtractionForm onSuccess={() => { fetchMeals(); setShowForm(false); }} />
+              ) : (
+                <PDFImport onSuccess={() => { fetchMeals(); setShowForm(false); }} />
+              )}
+            </Card>
+          )}
 
           {/* Meal List */}
-          <Card>
-            <MealList meals={meals} onUpdate={fetchMeals} />
-          </Card>
+          <MealList meals={meals} onUpdate={fetchMeals} />
 
           {/* Pagination */}
           {pagination.totalPages > 1 && (

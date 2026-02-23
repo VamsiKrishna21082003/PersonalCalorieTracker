@@ -7,6 +7,7 @@ import { format } from 'date-fns';
 import MealForm from './MealForm';
 import Button from './ui/Button';
 import EmptyState from './ui/EmptyState';
+import Card from './ui/Card';
 
 interface Meal {
   id: string;
@@ -86,121 +87,101 @@ export default function MealList({ meals, onUpdate }: MealListProps) {
           description="Start tracking your nutrition by adding your first meal entry."
         />
       ) : (
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Food Name
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Meal Type
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Quantity
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Calories
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Protein
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Carbs
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Fat
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Micronutrients
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Date
-                </th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Actions
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {meals.map((meal) => (
-                <tr
-                  key={meal.id}
-                  className="hover:bg-gray-50 transition-colors"
-                >
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{meal.foodName}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{meal.mealType}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{meal.quantity}g</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-900 font-medium">{meal.calories} kcal</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{meal.protein ? `${meal.protein}g` : '-'}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{meal.carbs ? `${meal.carbs}g` : '-'}</span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">{meal.fat ? `${meal.fat}g` : '-'}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    {meal.micronutrients && Object.keys(meal.micronutrients).length > 0 ? (
-                      <div className="text-xs text-gray-600 max-w-xs">
-                        {Object.entries(meal.micronutrients)
-                          .slice(0, 3)
-                          .map(([key, value]) => {
-                            const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim();
-                            const displayValue = typeof value === 'number' ? value.toFixed(1) : String(value || '');
-                            return (
-                              <div key={key} className="truncate">
-                                {formattedKey}: {displayValue}
+        <div className="space-y-6">
+          {mealTypeOrder.map((type) => {
+            const typeMeals = mealsByType[type] || [];
+            if (typeMeals.length === 0) return null;
+
+            return (
+              <Card key={type} hover={false}>
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">{type}</h3>
+                <div className="space-y-3">
+                  {typeMeals.map((meal) => (
+                    <div
+                      key={meal.id}
+                      className="p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+                    >
+                      <div className="flex justify-between items-start gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-start justify-between gap-4 mb-2">
+                            <h4 className="text-base font-semibold text-gray-900">{meal.foodName}</h4>
+                            <div className="flex gap-2 shrink-0">
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setEditingMeal(meal)}
+                              >
+                                Edit
+                              </Button>
+                              <Button
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => handleDelete(meal.id)}
+                                disabled={deletingId === meal.id}
+                                loading={deletingId === meal.id}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-3 text-sm text-gray-600 mb-3">
+                            <span className="text-xs text-gray-500">
+                              {format(new Date(meal.date), 'MMM d, yyyy')}
+                            </span>
+                            <span className="text-gray-300">•</span>
+                            <span>{meal.quantity}g</span>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="px-2 py-1 rounded text-sm font-semibold bg-blue-50 text-blue-700">
+                              {meal.calories} kcal
+                            </span>
+                            {meal.protein !== null && meal.protein !== undefined && (
+                              <span className="px-2 py-1 rounded text-sm font-medium bg-green-50 text-green-700">
+                                {meal.protein}g protein
+                              </span>
+                            )}
+                            {meal.carbs !== null && meal.carbs !== undefined && (
+                              <span className="px-2 py-1 rounded text-sm font-medium bg-amber-50 text-amber-700">
+                                {meal.carbs}g carbs
+                              </span>
+                            )}
+                            {meal.fat !== null && meal.fat !== undefined && (
+                              <span className="px-2 py-1 rounded text-sm font-medium bg-red-50 text-red-700">
+                                {meal.fat}g fat
+                              </span>
+                            )}
+                          </div>
+                          {meal.micronutrients && Object.keys(meal.micronutrients).length > 0 && (
+                            <div className="mt-3 pt-3 border-t border-gray-100">
+                              <div className="text-xs text-gray-600">
+                                {Object.entries(meal.micronutrients)
+                                  .slice(0, 3)
+                                  .map(([key, value]) => {
+                                    const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim();
+                                    const displayValue = typeof value === 'number' ? value.toFixed(1) : String(value || '');
+                                    return (
+                                      <span key={key} className="mr-3">
+                                        {formattedKey}: {displayValue}
+                                      </span>
+                                    );
+                                  })}
+                                {Object.keys(meal.micronutrients).length > 3 && (
+                                  <span className="text-gray-400">
+                                    +{Object.keys(meal.micronutrients).length - 3} more
+                                  </span>
+                                )}
                               </div>
-                            );
-                          })}
-                        {Object.keys(meal.micronutrients).length > 3 && (
-                          <div className="text-gray-400">+{Object.keys(meal.micronutrients).length - 3} more</div>
-                        )}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                    ) : (
-                      <span className="text-sm text-gray-400">-</span>
-                    )}
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className="text-sm text-gray-600">
-                      {format(new Date(meal.date), 'MMM d, yyyy')}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end gap-3">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setEditingMeal(meal)}
-                      >
-                        Edit
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleDelete(meal.id)}
-                        disabled={deletingId === meal.id}
-                        loading={deletingId === meal.id}
-                        className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                      >
-                        Delete
-                      </Button>
                     </div>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                  ))}
+                </div>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

@@ -107,83 +107,85 @@ export default function GoalsPage() {
             </Card>
           )}
 
-          {/* Current Active Goal Card */}
+          {/* Current Active Goal Card - Hero */}
           {currentGoal && (
-            <Card hover>
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <div className="flex items-center gap-3 mb-2">
-                    <h2 className="text-lg font-semibold text-gray-900">Current Active Goal</h2>
-                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      Active
-                    </span>
+            <Card className="bg-gradient-to-br from-blue-50 to-white border-blue-200" hover={false}>
+              <div className="p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <div>
+                    <div className="flex items-center gap-3 mb-3">
+                      <h2 className="text-3xl font-bold text-gray-900">Current Active Goal</h2>
+                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold bg-blue-600 text-white">
+                        Active
+                      </span>
+                    </div>
+                    <p className="text-base text-gray-600">
+                      {format(new Date(currentGoal.startDate), 'MMM d, yyyy')}
+                      {currentGoal.endDate && ` - ${format(new Date(currentGoal.endDate), 'MMM d, yyyy')}`}
+                    </p>
                   </div>
-                  <p className="text-sm text-gray-600">
-                    {format(new Date(currentGoal.startDate), 'MMM d, yyyy')}
-                    {currentGoal.endDate && ` - ${format(new Date(currentGoal.endDate), 'MMM d, yyyy')}`}
-                  </p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setEditingGoal(currentGoal);
+                      setShowForm(true);
+                    }}
+                  >
+                    Edit
+                  </Button>
                 </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setEditingGoal(currentGoal);
-                    setShowForm(true);
-                  }}
-                >
-                  Edit
-                </Button>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-blue-200">
+                  <div>
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Calories</p>
+                    <p className="text-3xl font-bold text-gray-900">{currentGoal.dailyCalories}</p>
+                    <p className="text-xs text-gray-500 mt-0.5">kcal/day</p>
+                  </div>
+                  {currentGoal.dailyProtein && (
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Protein</p>
+                      <p className="text-3xl font-bold text-gray-900">{currentGoal.dailyProtein}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">grams</p>
+                    </div>
+                  )}
+                  {currentGoal.dailyCarbs && (
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Carbs</p>
+                      <p className="text-3xl font-bold text-gray-900">{currentGoal.dailyCarbs}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">grams</p>
+                    </div>
+                  )}
+                  {currentGoal.dailyFat && (
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Fat</p>
+                      <p className="text-3xl font-bold text-gray-900">{currentGoal.dailyFat}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">grams</p>
+                    </div>
+                  )}
+                  {currentGoal.weightGoal && (
+                    <div>
+                      <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Weight Goal</p>
+                      <p className="text-3xl font-bold text-gray-900">{currentGoal.weightGoal}</p>
+                      <p className="text-xs text-gray-500 mt-0.5">kg</p>
+                    </div>
+                  )}
+                </div>
+                {currentGoal.micronutrients && Object.keys(currentGoal.micronutrients).length > 0 && (
+                  <div className="mt-4 pt-4 border-t border-blue-200">
+                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Micronutrient Goals</p>
+                    <div className="grid grid-cols-4 gap-2">
+                      {Object.entries(currentGoal.micronutrients).map(([key, value]) => (
+                        <div key={key} className="text-center">
+                          <p className="text-xs text-gray-500 mb-0.5 truncate">
+                            {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim()}
+                          </p>
+                          <p className="text-sm font-semibold text-gray-900">{value as number}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
               </div>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 pt-6 border-t border-gray-200">
-                <div>
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Calories</p>
-                  <p className="text-xl font-semibold text-gray-900">{currentGoal.dailyCalories}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">kcal/day</p>
-                </div>
-                {currentGoal.dailyProtein && (
-                  <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Protein</p>
-                    <p className="text-xl font-semibold text-gray-900">{currentGoal.dailyProtein}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">grams</p>
-                  </div>
-                )}
-                {currentGoal.dailyCarbs && (
-                  <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Carbs</p>
-                    <p className="text-xl font-semibold text-gray-900">{currentGoal.dailyCarbs}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">grams</p>
-                  </div>
-                )}
-                {currentGoal.dailyFat && (
-                  <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Fat</p>
-                    <p className="text-xl font-semibold text-gray-900">{currentGoal.dailyFat}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">grams</p>
-                  </div>
-                )}
-                {currentGoal.weightGoal && (
-                  <div>
-                    <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Weight Goal</p>
-                    <p className="text-xl font-semibold text-gray-900">{currentGoal.weightGoal}</p>
-                    <p className="text-xs text-gray-500 mt-0.5">kg</p>
-                  </div>
-                )}
-              </div>
-              {currentGoal.micronutrients && Object.keys(currentGoal.micronutrients).length > 0 && (
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-4">Micronutrient Goals</p>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-                    {Object.entries(currentGoal.micronutrients).map(([key, value]) => (
-                      <div key={key}>
-                        <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
-                          {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim()}
-                        </p>
-                        <p className="text-sm font-semibold text-gray-900">{value as number}</p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </Card>
           )}
 
@@ -200,13 +202,17 @@ export default function GoalsPage() {
                 }}
               />
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {goals.map((goal) => (
                   <div
                     key={goal.id}
-                    className="p-6 border border-gray-200 rounded-lg hover:border-gray-300 hover:shadow-sm transition-all"
+                    className={`p-4 border rounded-lg transition-all ${
+                      goal.isActive
+                        ? 'border-blue-200 bg-blue-50/30 hover:border-blue-300 hover:shadow-sm'
+                        : 'border-gray-200 bg-white hover:border-gray-300 hover:shadow-sm'
+                    }`}
                   >
-                    <div className="flex justify-between items-start mb-4">
+                    <div className="flex justify-between items-start mb-3">
                       <div className="flex-1">
                         <div className="flex items-center gap-3 mb-2">
                           <h3 className="text-lg font-semibold text-gray-900">
@@ -218,45 +224,45 @@ export default function GoalsPage() {
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-600 mb-4">
+                        <p className="text-sm text-gray-600 mb-3">
                           {format(new Date(goal.startDate), 'MMM d, yyyy')}
                           {goal.endDate && ` - ${format(new Date(goal.endDate), 'MMM d, yyyy')}`}
                         </p>
                         {(goal.dailyProtein || goal.dailyCarbs || goal.dailyFat || goal.weightGoal) && (
-                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t border-gray-100">
+                          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-3 border-t border-gray-100">
                             {goal.dailyProtein && (
                               <div>
                                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Protein</p>
-                                <p className="text-sm font-semibold text-gray-900">{goal.dailyProtein}g</p>
+                                <p className="text-base font-semibold text-gray-900">{goal.dailyProtein}g</p>
                               </div>
                             )}
                             {goal.dailyCarbs && (
                               <div>
                                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Carbs</p>
-                                <p className="text-sm font-semibold text-gray-900">{goal.dailyCarbs}g</p>
+                                <p className="text-base font-semibold text-gray-900">{goal.dailyCarbs}g</p>
                               </div>
                             )}
                             {goal.dailyFat && (
                               <div>
                                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Fat</p>
-                                <p className="text-sm font-semibold text-gray-900">{goal.dailyFat}g</p>
+                                <p className="text-base font-semibold text-gray-900">{goal.dailyFat}g</p>
                               </div>
                             )}
                             {goal.weightGoal && (
                               <div>
                                 <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">Weight Goal</p>
-                                <p className="text-sm font-semibold text-gray-900">{goal.weightGoal}kg</p>
+                                <p className="text-base font-semibold text-gray-900">{goal.weightGoal}kg</p>
                               </div>
                             )}
                           </div>
                         )}
                         {goal.micronutrients && Object.keys(goal.micronutrients).length > 0 && (
-                          <div className="mt-4 pt-4 border-t border-gray-100">
-                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-3">Micronutrient Goals</p>
-                            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                          <div className="mt-3 pt-3 border-t border-gray-100">
+                            <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Micronutrient Goals</p>
+                            <div className="grid grid-cols-4 gap-2">
                               {Object.entries(goal.micronutrients).map(([key, value]) => (
-                                <div key={key}>
-                                  <p className="text-xs font-medium text-gray-500 uppercase tracking-wide mb-1">
+                                <div key={key} className="text-center">
+                                  <p className="text-xs text-gray-500 mb-0.5 truncate">
                                     {key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim()}
                                   </p>
                                   <p className="text-sm font-semibold text-gray-900">{value as number}</p>

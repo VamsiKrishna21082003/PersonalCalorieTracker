@@ -16,7 +16,7 @@ export default function Navigation() {
     { href: '/dashboard', label: 'Dashboard' },
     { href: '/meals', label: 'Meals' },
     { href: '/goals', label: 'Goals' },
-    { href: '/chat', label: 'Chat' },
+    { href: '/chat', label: 'AI Nutrition Assistant' },
   ];
 
   return (

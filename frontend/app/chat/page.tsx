@@ -204,6 +204,11 @@ export default function ChatPage() {
 
           {/* Chat Window */}
           <div className="flex-1 flex flex-col min-w-0">
+            {/* Page Header */}
+            <div className="p-6 bg-white border-b border-gray-200">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">AI Nutrition Assistant</h1>
+              <p className="text-sm text-gray-600">Your intelligent nutrition companion</p>
+            </div>
             <ChatInterface
               messages={activeMessages}
               onNewMessage={handleNewMessage}
