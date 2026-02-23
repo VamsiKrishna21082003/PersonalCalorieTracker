@@ -48,13 +48,23 @@ export default function MealList({ meals, onUpdate }: MealListProps) {
     }
   };
 
-  const mealsByType = meals.reduce((acc, meal) => {
-    if (!acc[meal.mealType]) {
-      acc[meal.mealType] = [];
+  // Group meals by date first, then by meal type within each date
+  const mealsByDate = meals.reduce((acc, meal) => {
+    const dateKey = format(new Date(meal.date), 'yyyy-MM-dd');
+    if (!acc[dateKey]) {
+      acc[dateKey] = {};
     }
-    acc[meal.mealType].push(meal);
+    if (!acc[dateKey][meal.mealType]) {
+      acc[dateKey][meal.mealType] = [];
+    }
+    acc[dateKey][meal.mealType].push(meal);
     return acc;
-  }, {} as Record<string, Meal[]>);
+  }, {} as Record<string, Record<string, Meal[]>>);
+
+  // Sort dates in descending order (most recent first)
+  const sortedDates = Object.keys(mealsByDate).sort((a, b) => {
+    return new Date(b).getTime() - new Date(a).getTime();
+  });
 
   const mealTypeOrder = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
 
@@ -87,99 +97,116 @@ export default function MealList({ meals, onUpdate }: MealListProps) {
           description="Start tracking your nutrition by adding your first meal entry."
         />
       ) : (
-        <div className="space-y-6">
-          {mealTypeOrder.map((type) => {
-            const typeMeals = mealsByType[type] || [];
-            if (typeMeals.length === 0) return null;
+        <div className="space-y-8">
+          {sortedDates.map((dateKey) => {
+            const dateMeals = mealsByDate[dateKey];
+            const date = new Date(dateKey);
+            const hasAnyMeals = mealTypeOrder.some(type => dateMeals[type] && dateMeals[type].length > 0);
+            
+            if (!hasAnyMeals) return null;
 
             return (
-              <Card key={type} hover={false}>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">{type}</h3>
-                <div className="space-y-3">
-                  {typeMeals.map((meal) => (
-                    <div
-                      key={meal.id}
-                      className="p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
-                    >
-                      <div className="flex justify-between items-start gap-4">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-4 mb-2">
-                            <h4 className="text-base font-semibold text-gray-900">{meal.foodName}</h4>
-                            <div className="flex gap-2 shrink-0">
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => setEditingMeal(meal)}
-                              >
-                                Edit
-                              </Button>
-                              <Button
-                                variant="ghost"
-                                size="sm"
-                                onClick={() => handleDelete(meal.id)}
-                                disabled={deletingId === meal.id}
-                                loading={deletingId === meal.id}
-                                className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                              >
-                                Delete
-                              </Button>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-3 text-sm text-gray-600 mb-3">
-                            <span className="text-xs text-gray-500">
-                              {format(new Date(meal.date), 'MMM d, yyyy')}
-                            </span>
-                            <span className="text-gray-300">•</span>
-                            <span>{meal.quantity}g</span>
-                          </div>
-                          <div className="flex flex-wrap items-center gap-2">
-                            <span className="px-2 py-1 rounded text-sm font-semibold bg-blue-50 text-blue-700">
-                              {meal.calories} kcal
-                            </span>
-                            {meal.protein !== null && meal.protein !== undefined && (
-                              <span className="px-2 py-1 rounded text-sm font-medium bg-green-50 text-green-700">
-                                {meal.protein}g protein
-                              </span>
-                            )}
-                            {meal.carbs !== null && meal.carbs !== undefined && (
-                              <span className="px-2 py-1 rounded text-sm font-medium bg-amber-50 text-amber-700">
-                                {meal.carbs}g carbs
-                              </span>
-                            )}
-                            {meal.fat !== null && meal.fat !== undefined && (
-                              <span className="px-2 py-1 rounded text-sm font-medium bg-red-50 text-red-700">
-                                {meal.fat}g fat
-                              </span>
-                            )}
-                          </div>
-                          {meal.micronutrients && Object.keys(meal.micronutrients).length > 0 && (
-                            <div className="mt-3 pt-3 border-t border-gray-100">
-                              <div className="text-xs text-gray-600">
-                                {Object.entries(meal.micronutrients)
-                                  .slice(0, 3)
-                                  .map(([key, value]) => {
-                                    const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim();
-                                    const displayValue = typeof value === 'number' ? value.toFixed(1) : String(value || '');
-                                    return (
-                                      <span key={key} className="mr-3">
-                                        {formattedKey}: {displayValue}
-                                      </span>
-                                    );
-                                  })}
-                                {Object.keys(meal.micronutrients).length > 3 && (
-                                  <span className="text-gray-400">
-                                    +{Object.keys(meal.micronutrients).length - 3} more
+              <div key={dateKey} className="space-y-6">
+                {/* Date Header */}
+                <div className="flex items-center gap-3 mb-2">
+                  <h2 className="text-xl font-bold text-gray-900">
+                    {format(date, 'EEEE, MMMM d, yyyy')}
+                  </h2>
+                  <div className="flex-1 h-px bg-gray-200"></div>
+                </div>
+
+                {/* Meal Types for this Date */}
+                {mealTypeOrder.map((type) => {
+                  const typeMeals = dateMeals[type] || [];
+                  if (typeMeals.length === 0) return null;
+
+                  return (
+                    <Card key={`${dateKey}-${type}`} hover={false}>
+                      <h3 className="text-lg font-semibold text-gray-900 mb-4">{type}</h3>
+                      <div className="space-y-3">
+                        {typeMeals.map((meal) => (
+                          <div
+                            key={meal.id}
+                            className="p-4 rounded-lg border border-gray-100 hover:bg-gray-50 transition-colors"
+                          >
+                            <div className="flex justify-between items-start gap-4">
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-start justify-between gap-4 mb-2">
+                                  <h4 className="text-base font-semibold text-gray-900">{meal.foodName}</h4>
+                                  <div className="flex gap-2 shrink-0">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => setEditingMeal(meal)}
+                                    >
+                                      Edit
+                                    </Button>
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleDelete(meal.id)}
+                                      disabled={deletingId === meal.id}
+                                      loading={deletingId === meal.id}
+                                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                                    >
+                                      Delete
+                                    </Button>
+                                  </div>
+                                </div>
+                                <div className="flex items-center gap-3 text-sm text-gray-600 mb-3">
+                                  <span>{meal.quantity}g</span>
+                                </div>
+                                <div className="flex flex-wrap items-center gap-2">
+                                  <span className="px-2 py-1 rounded text-sm font-semibold bg-blue-50 text-blue-700">
+                                    {meal.calories} kcal
                                   </span>
+                                  {meal.protein !== null && meal.protein !== undefined && (
+                                    <span className="px-2 py-1 rounded text-sm font-medium bg-green-50 text-green-700">
+                                      {meal.protein}g protein
+                                    </span>
+                                  )}
+                                  {meal.carbs !== null && meal.carbs !== undefined && (
+                                    <span className="px-2 py-1 rounded text-sm font-medium bg-amber-50 text-amber-700">
+                                      {meal.carbs}g carbs
+                                    </span>
+                                  )}
+                                  {meal.fat !== null && meal.fat !== undefined && (
+                                    <span className="px-2 py-1 rounded text-sm font-medium bg-red-50 text-red-700">
+                                      {meal.fat}g fat
+                                    </span>
+                                  )}
+                                </div>
+                                {meal.micronutrients && Object.keys(meal.micronutrients).length > 0 && (
+                                  <div className="mt-3 pt-3 border-t border-gray-100">
+                                    <div className="text-xs text-gray-600">
+                                      {Object.entries(meal.micronutrients)
+                                        .slice(0, 3)
+                                        .map(([key, value]) => {
+                                          const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, (str) => str.toUpperCase()).trim();
+                                          const displayValue = typeof value === 'number' ? value.toFixed(1) : String(value || '');
+                                          return (
+                                            <span key={key} className="mr-3">
+                                              {formattedKey}: {displayValue}
+                                            </span>
+                                          );
+                                        })}
+                                      {Object.keys(meal.micronutrients).length > 3 && (
+                                        <span className="text-gray-400">
+                                          +{Object.keys(meal.micronutrients).length - 3} more
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
                                 )}
                               </div>
                             </div>
-                          )}
-                        </div>
+                          </div>
+                        ))}
                       </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
+                    </Card>
+                  );
+                })}
+              </div>
             );
           })}
         </div>
