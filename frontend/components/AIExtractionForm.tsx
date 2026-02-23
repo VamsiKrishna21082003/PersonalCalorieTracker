@@ -9,6 +9,8 @@ export default function AIExtractionForm({ onSuccess }: { onSuccess?: () => void
   const [imageUrl, setImageUrl] = useState<string | null>(null);
 
   const handleExtractionComplete = (data: any) => {
+    console.log('Extraction complete, received data:', data);
+    console.log('Micronutrients in extracted data:', data?.micronutrients);
     setExtractedData(data);
   };
 
@@ -54,6 +56,7 @@ export default function AIExtractionForm({ onSuccess }: { onSuccess?: () => void
       <div>
         <h3 className="text-md font-semibold mb-4">Meal Details</h3>
         <MealForm
+          key={extractedData ? `extracted-${Date.now()}` : 'empty'}
           initialData={extractedData ? {
             foodName: extractedData.foodName || '',
             quantity: extractedData.quantity || '',

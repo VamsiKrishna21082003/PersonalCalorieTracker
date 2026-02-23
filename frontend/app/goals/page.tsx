@@ -4,7 +4,6 @@ import { useState, useEffect } from 'react';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import GoalForm from '@/components/GoalForm';
 import Card from '@/components/ui/Card';
-import Container from '@/components/ui/Container';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
 import api from '@/lib/api';
@@ -80,10 +79,10 @@ export default function GoalsPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gray-50 py-8">
-        <Container maxWidth="4xl">
+      <div className="flex-1 p-8 bg-gray-50">
+        <div className="space-y-8">
           {/* Header */}
-          <div className="mb-8">
+          <div>
             <div className="flex justify-between items-center mb-2">
               <h1 className="text-3xl font-bold text-gray-900">Goals</h1>
               <Button
@@ -100,7 +99,7 @@ export default function GoalsPage() {
 
           {/* Form Card */}
           {showForm && (
-            <Card className="mb-6">
+            <Card>
               <h2 className="text-lg font-semibold text-gray-900 mb-6">
                 {editingGoal ? 'Edit Goal' : 'Create New Goal'}
               </h2>
@@ -110,7 +109,7 @@ export default function GoalsPage() {
 
           {/* Current Active Goal Card */}
           {currentGoal && (
-            <Card className="mb-6" hover>
+            <Card hover>
               <div className="flex justify-between items-start mb-6">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
@@ -283,7 +282,7 @@ export default function GoalsPage() {
               </div>
             )}
           </Card>
-        </Container>
+        </div>
       </div>
     </ProtectedRoute>
   );

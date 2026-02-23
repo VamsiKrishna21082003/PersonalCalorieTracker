@@ -45,20 +45,35 @@ export default function MealForm({ meal, onSuccess, initialData }: MealFormProps
 
   useEffect(() => {
     if (initialData) {
-      setFormData(prev => ({
-        ...prev,
-        foodName: initialData.foodName ?? prev.foodName,
-        quantity: initialData.quantity ?? prev.quantity,
-        mealType: initialData.mealType ?? prev.mealType,
-        calories: initialData.calories ?? prev.calories,
-        protein: initialData.protein ?? prev.protein,
-        carbs: initialData.carbs ?? prev.carbs,
-        fat: initialData.fat ?? prev.fat,
-        date: initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : prev.date,
-        micronutrients: initialData.micronutrients ?? prev.micronutrients,
-      }));
+      console.log('MealForm: initialData received:', initialData);
+      console.log('MealForm: micronutrients in initialData:', initialData.micronutrients);
+      
+      setFormData(prev => {
+        // Merge micronutrients properly - use initialData values if they exist, otherwise keep previous
+        const mergedMicronutrients = {
+          ...prev.micronutrients,
+          ...(initialData.micronutrients || {}),
+        };
+        
+        console.log('MealForm: merged micronutrients:', mergedMicronutrients);
+        
+        return {
+          ...prev,
+          foodName: initialData.foodName !== undefined ? initialData.foodName : prev.foodName,
+          quantity: initialData.quantity !== undefined ? initialData.quantity : prev.quantity,
+          mealType: initialData.mealType !== undefined ? initialData.mealType : prev.mealType,
+          calories: initialData.calories !== undefined ? initialData.calories : prev.calories,
+          protein: initialData.protein !== undefined && initialData.protein !== null ? initialData.protein : prev.protein,
+          carbs: initialData.carbs !== undefined && initialData.carbs !== null ? initialData.carbs : prev.carbs,
+          fat: initialData.fat !== undefined && initialData.fat !== null ? initialData.fat : prev.fat,
+          date: initialData.date ? new Date(initialData.date).toISOString().split('T')[0] : prev.date,
+          micronutrients: mergedMicronutrients,
+        };
+      });
+      
       // Show micronutrients section if meal has micronutrients
       if (initialData.micronutrients && Object.keys(initialData.micronutrients).length > 0) {
+        console.log('MealForm: Expanding micronutrients section, keys:', Object.keys(initialData.micronutrients));
         setShowMicronutrients(true);
       }
     }

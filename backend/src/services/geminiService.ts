@@ -32,7 +32,7 @@ export const listAvailableModels = async (): Promise<string[]> => {
 
 interface ExtractedNutrition {
   foodName: string;
-  calories: number;
+  calories?: number;
   protein?: number;
   carbs?: number;
   fat?: number;
@@ -52,18 +52,44 @@ export const extractNutritionFromImage = async (imageUrl: string): Promise<Extra
       throw new Error('Failed to initialize Gemini client');
     }
 
-    const prompt = `You are a nutrition expert. Analyze the provided image (which could be a nutrition label or a food plate) and extract nutritional information. 
-Return a JSON object with the following structure:
+    const prompt = `You are a nutrition expert. Analyze the provided image (which could be a nutrition label or a food plate) and extract ALL nutritional information visible.
+
+IMPORTANT: You MUST always include a "micronutrients" object in your response, even if it's empty. If you see a nutrition facts label, extract ALL micronutrients that are listed (vitamins and minerals).
+
+Return a JSON object with the following EXACT structure:
 {
   "foodName": "name of the food item",
-  "calories": number (calories per serving or total),
+  "calories": number (calories per serving or total - estimate if not visible on label, optional),
   "protein": number (grams, optional),
   "carbs": number (grams, optional),
   "fat": number (grams, optional),
   "quantity": number (serving size in grams or units, optional),
-  "micronutrients": object (optional, with vitamins/minerals if visible)
+  "micronutrients": {
+    "vitaminA": number (micrograms/mcg, only if visible),
+    "vitaminC": number (milligrams/mg, only if visible),
+    "iron": number (milligrams/mg, only if visible),
+    "calcium": number (milligrams/mg, only if visible),
+    "vitaminD": number (International Units/IU, only if visible),
+    "vitaminE": number (milligrams/mg, only if visible),
+    "vitaminK": number (micrograms/mcg, only if visible),
+    "magnesium": number (milligrams/mg, only if visible),
+    "zinc": number (milligrams/mg, only if visible),
+    "potassium": number (milligrams/mg, only if visible),
+    "sodium": number (milligrams/mg, only if visible),
+    "phosphorus": number (milligrams/mg, only if visible)
+  }
 }
-If information is not visible or unclear, use null for optional fields. Be as accurate as possible. Return only valid JSON, no additional text.`;
+
+CRITICAL RULES:
+1. ALWAYS include the "micronutrients" field in your response, even if it's an empty object {}
+2. If you see a nutrition facts label, extract ALL visible micronutrients (vitamins and minerals) using the exact field names above
+3. Use the exact field names: vitaminA, vitaminC, iron, calcium, vitaminD, vitaminE, vitaminK, magnesium, zinc, potassium, sodium, phosphorus
+4. Convert units to match: mcg for Vitamin A and K, mg for most others, IU for Vitamin D
+5. Only include micronutrients that are actually visible in the image - do not guess or estimate
+6. If no micronutrients are visible, return an empty object: "micronutrients": {}
+7. For calories: If you see a nutrition label, extract the exact calories. If it's a food plate image without a label, provide a reasonable estimate based on the food items visible. If you cannot determine calories at all, you may omit it.
+
+If information is not visible or unclear for other fields, use null for optional fields. Be as accurate as possible. Return ONLY valid JSON, no additional text or explanations.`;
 
     // Fetch image and convert to base64
     const imageResponse = await fetch(imageUrl);
@@ -117,28 +143,74 @@ If information is not visible or unclear, use null for optional fields. Be as ac
       throw new Error('No response from Gemini');
     }
 
+    // Log raw response for debugging
+    console.log('Gemini raw response:', content);
+
     // Try to parse JSON from the response
     let nutritionData: ExtractedNutrition;
     try {
       // Remove any markdown code blocks if present
       const jsonContent = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       nutritionData = JSON.parse(jsonContent);
-    } catch (parseError) {
+      console.log('Parsed nutrition data:', JSON.stringify(nutritionData, null, 2));
+      console.log('Micronutrients in parsed data:', nutritionData.micronutrients);
+    } catch (parseError: any) {
+      console.error('First parse attempt failed:', parseError.message);
+      console.error('Content that failed to parse:', content.substring(0, 500));
+      
       // If parsing fails, try to extract JSON from the text
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        nutritionData = JSON.parse(jsonMatch[0]);
+        try {
+          nutritionData = JSON.parse(jsonMatch[0]);
+          console.log('Parsed nutrition data (from regex match):', JSON.stringify(nutritionData, null, 2));
+          console.log('Micronutrients in parsed data:', nutritionData.micronutrients);
+        } catch (secondParseError: any) {
+          console.error('Second parse attempt also failed:', secondParseError.message);
+          console.error('Extracted JSON string:', jsonMatch[0].substring(0, 500));
+          throw new Error(`Failed to parse nutrition data from response. Parse error: ${secondParseError.message}`);
+        }
       } else {
-        throw new Error('Failed to parse nutrition data from response');
+        console.error('No JSON object found in response');
+        console.error('Full response content:', content);
+        throw new Error('Failed to parse nutrition data from response. No valid JSON found.');
+      }
+    }
+    
+    // Ensure micronutrients is always an object (even if empty)
+    if (!nutritionData.micronutrients || typeof nutritionData.micronutrients !== 'object') {
+      console.log('Micronutrients missing or invalid, setting to empty object');
+      nutritionData.micronutrients = {};
+    }
+
+    // Validate required fields with better error messages
+    if (!nutritionData.foodName) {
+      console.error('Missing foodName in parsed data:', nutritionData);
+      throw new Error('Missing required field: foodName. The image might not contain clear food information.');
+    }
+    
+    // Handle calories - make it optional, default to 0 if missing
+    if (nutritionData.calories === undefined || nutritionData.calories === null) {
+      console.warn('Calories not provided, setting to 0. User can edit manually.');
+      nutritionData.calories = 0;
+    } else if (typeof nutritionData.calories !== 'number') {
+      console.warn('Calories is not a number, attempting to convert:', nutritionData.calories);
+      const caloriesNum = parseFloat(String(nutritionData.calories));
+      if (isNaN(caloriesNum)) {
+        console.warn('Could not convert calories to number, setting to 0');
+        nutritionData.calories = 0;
+      } else {
+        nutritionData.calories = caloriesNum;
       }
     }
 
-    // Validate required fields
-    if (!nutritionData.foodName || !nutritionData.calories) {
-      throw new Error('Missing required nutrition data');
-    }
+    // Ensure calories is always a number in the return value
+    const extractedNutrition: ExtractedNutrition = {
+      ...nutritionData,
+      calories: nutritionData.calories ?? 0,
+    };
 
-    return nutritionData;
+    return extractedNutrition;
   } catch (error: any) {
     console.error('Gemini extraction error:', error);
     console.error('Extraction error details:', {
