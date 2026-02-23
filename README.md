@@ -1,6 +1,8 @@
+
 # Personal Calorie Tracker
 
 A full-stack calorie tracking application with goal setting, meal entry, nutrition reports, AI-powered calorie extraction, authentication, and LLM chat interface.
+heres the demo video: https://www.youtube.com/watch?v=RRAPx-MO-FA
 
 ## Features
 
